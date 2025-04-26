@@ -16,7 +16,10 @@ const SignIn = () => {
         if (email === "admin@admin.com" && password === "1234") {
             // Login bem-sucedido
             navigate("/home"); // Redireciona para a página de dashboard
-        } else {
+        }   else if (email === "cliente@cliente.com" && password === "1234"){
+            navigate("/home");
+        } 
+        else {
             setError("Email ou senha incorretos");
         }
     };
