@@ -3,6 +3,7 @@ import { Route, Routes } from 'react-router-dom';
 
 import SignIn from './views/auth/sign-in';
 import Home from './views/home/index';
+import Agendamento from './views/agendamento/agendamento';
 
 export default function AppRoutes() {
 
