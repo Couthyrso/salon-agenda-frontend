@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom'; // <-- ADICIONADO AQUI
 import './home.css';
 
 const Home = () => {
@@ -6,7 +7,8 @@ const Home = () => {
     const [selectedService, setSelectedService] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    // Carrega os serviços quando o componente é montado
+    const navigate = useNavigate(); // <-- ADICIONADO AQUI
+
     useEffect(() => {
         const fetchServices = async () => {
             try {
@@ -31,6 +33,10 @@ const Home = () => {
 
     const handleServiceSelect = (service) => {
         setSelectedService(service);
+    };
+
+    const handleNextStep = () => {
+        navigate('/agendamento'); // <-- ADICIONADO AQUI
     };
 
     if (loading) {
@@ -75,8 +81,8 @@ const Home = () => {
                     <p> BREVE DESCRIÇÃO DO SERVIÇO</p>
                     <p>Duração: {selectedService.duration} minutos</p>
                     <p>Preço: R$ {selectedService.price}</p>
-                    <button className="next-button">
-                        Próximo Passo
+                    <button className="next-button" onClick={handleNextStep}>
+                        Agendamento {/* <-- ALTERADO O TEXTO AQUI */}
                     </button>
                 </div>
             )}
