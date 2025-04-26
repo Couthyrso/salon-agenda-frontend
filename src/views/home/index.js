@@ -71,7 +71,8 @@ const Home = () => {
             {selectedService && (
                 <div className="selected-service" id="agendamento">
                     <h2>Serviço Selecionado</h2>
-                    <p>{selectedService.name}</p>
+                    {/* <p>{selectedService.name}</p> */}
+                    <p> BREVE DESCRIÇÃO DO SERVIÇO</p>
                     <p>Duração: {selectedService.duration} minutos</p>
                     <p>Preço: R$ {selectedService.price}</p>
                     <button className="next-button">
