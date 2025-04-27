@@ -5,8 +5,7 @@ const Agendamento = () => {
   const [etapa, setEtapa] = useState(1);
   const [data, setData] = useState('');
   const [hora, setHora] = useState('');
-  const [cartao, setCartao] = useState('');
-  const [mensagem, setMensagem] = useState('');
+  const [mensagem, setMensagem] = useState(''); 
   const [erro, setErro] = useState(false);
 
   const horarios = ["09:00", "10:00", "11:00", "13:00", "14:00", "15:00", "16:00", "17:00"];
@@ -36,6 +35,13 @@ const Agendamento = () => {
     }, 1500);
   };
 
+  // Gerar a data de hoje no formato YYYY-MM-DD
+  const hoje = new Date();
+  const ano = hoje.getFullYear();
+  const mes = String(hoje.getMonth() + 1).padStart(2, '0');
+  const dia = String(hoje.getDate()).padStart(2, '0');
+  const dataMinima = `${ano}-${mes}-${dia}`;
+
   return (
     <div className="container">
       {etapa === 1 && (
@@ -46,7 +52,7 @@ const Agendamento = () => {
           <input 
             type="date" 
             value={data} 
-            min="2024-01-01" 
+            min={dataMinima} // 👈 agora aqui é dinâmico
             max="2030-12-31"
             onChange={(e) => setData(e.target.value)}
           />
@@ -75,9 +81,7 @@ const Agendamento = () => {
           <p style={{ textAlign: 'center', fontWeight: 'bold' }}>
             Valor a pagar: R$ 100,00
           </p>
-
-
-
+          
           <button onClick={pagar}>Pagar</button>
 
           {mensagem && (
