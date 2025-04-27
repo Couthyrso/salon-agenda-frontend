@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import './agendamento.css'; // vamos colocar o CSS separado, igual seu home.css
+import './agendamento.css';
 
 const Agendamento = () => {
   const [etapa, setEtapa] = useState(1);
   const [data, setData] = useState('');
   const [hora, setHora] = useState('');
-  const [mensagem, setMensagem] = useState(''); 
+  const [mensagem, setMensagem] = useState('');
   const [erro, setErro] = useState(false);
 
   const horarios = ["09:00", "10:00", "11:00", "13:00", "14:00", "15:00", "16:00", "17:00"];
@@ -42,6 +42,24 @@ const Agendamento = () => {
   const dia = String(hoje.getDate()).padStart(2, '0');
   const dataMinima = `${ano}-${mes}-${dia}`;
 
+  const horariosDisponiveis = () => {
+    const horariosDisponiveis = horarios.filter((horario) => {
+      const [horaDisponivel, minutoDisponivel] = horario.split(":");
+      const horaAtual = hoje.getHours();
+      const minutoAtual = hoje.getMinutes();
+
+      // Verifica se a hora já passou
+      if (hoje.toISOString().slice(0, 10) === data) {
+        if (parseInt(horaDisponivel) < horaAtual || (parseInt(horaDisponivel) === horaAtual && parseInt(minutoDisponivel) <= minutoAtual)) {
+          return false;
+        }
+      }
+      return true;
+    });
+
+    return horariosDisponiveis;
+  };
+
   return (
     <div className="container">
       {etapa === 1 && (
@@ -52,7 +70,7 @@ const Agendamento = () => {
           <input 
             type="date" 
             value={data} 
-            min={dataMinima} // 👈 agora aqui é dinâmico
+            min={dataMinima} 
             max="2030-12-31"
             onChange={(e) => setData(e.target.value)}
           />
@@ -60,7 +78,7 @@ const Agendamento = () => {
           <label>Selecione o horário:</label>
           <select value={hora} onChange={(e) => setHora(e.target.value)}>
             <option value="">Selecione o horário</option>
-            {horarios.map((h) => (
+            {horariosDisponiveis().map((h) => (
               <option key={h} value={h}>{h}</option>
             ))}
           </select>
@@ -81,7 +99,7 @@ const Agendamento = () => {
           <p style={{ textAlign: 'center', fontWeight: 'bold' }}>
             Valor a pagar: R$ 100,00
           </p>
-          
+
           <button onClick={pagar}>Pagar</button>
 
           {mensagem && (

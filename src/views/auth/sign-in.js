@@ -11,15 +11,12 @@ const SignIn = () => {
     const handleSubmit = (e) => {
         e.preventDefault();
         
-        // Aqui você pode adicionar sua lógica de verificação
-        // Fazer uma chamada à API
+        // Lógica de verificação de email e senha
         if (email === "admin@admin.com" && password === "1234") {
-            // Login bem-sucedido
             navigate("/home"); // Redireciona para a página de dashboard
-        }   else if (email === "cliente@cliente.com" && password === "1234"){
+        } else if (email === "cliente@cliente.com" && password === "1234"){
             navigate("/home");
-        } 
-        else {
+        } else {
             setError("Email ou senha incorretos");
         }
     };
