@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './index.css';
+import './indexadm.css';
 
-const Home = () => {
+const HomeAdm = () => {
     const [services, setServices] = useState([]);
     const [selectedService, setSelectedService] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -55,7 +55,7 @@ const Home = () => {
     }
 
     return (
-        <div className="home-container">
+        <div className="homeadm-container">
             {/* Navbar */}
             <nav className="navbar">
                 <div className="logo">Salon Agenda</div>
@@ -100,4 +100,4 @@ const Home = () => {
     );
 };
 
-export default Home;
+export default HomeAdm;
