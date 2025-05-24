@@ -13,7 +13,7 @@ const SignIn = () => {
         
         // Lógica de verificação de email e senha
         if (email === "admin@admin.com" && password === "1234") {
-            navigate("/home"); // Redireciona para a página de dashboard
+            navigate("/homeadm"); // Redireciona para a página de dashboard
         } else if (email === "cliente@cliente.com" && password === "1234"){
             navigate("/home");
         } else {
