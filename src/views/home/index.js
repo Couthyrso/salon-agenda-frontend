@@ -1,19 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom'; // <-- ADICIONADO AQUI
-import './home.css';
+import { useNavigate } from 'react-router-dom';
+import './index.css';
 
 const Home = () => {
     const [services, setServices] = useState([]);
     const [selectedService, setSelectedService] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    const navigate = useNavigate(); // <-- ADICIONADO AQUI
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchServices = async () => {
             try {
                 const mockServices = [
+<<<<<<< HEAD
                     { id: 1, name: 'Corte-de-cabelo', duration: 30, price: 50 },
+=======
+                    { id: 1, name: 'Corte de cabelo', duration: 30, price: 50 },
+>>>>>>> f6ecf889a2e122405cb9172b2b65728da0a167e1
                     { id: 2, name: 'Coloração', duration: 60, price: 120 },
                     { id: 3, name: 'Manicure', duration: 45, price: 40 },
                     { id: 4, name: 'Pedicure', duration: 45, price: 45 },
@@ -36,7 +40,18 @@ const Home = () => {
     };
 
     const handleNextStep = () => {
-        navigate('/agendamento'); // <-- ADICIONADO AQUI
+        if (selectedService) {
+            navigate('/agendamento', { 
+                state: { 
+                    servicePrice: selectedService.price,
+                    serviceName: selectedService.name
+                } 
+            });
+        }
+    };
+
+    const handleMeusAgendamentos = () => {
+        navigate('/meus-agendamentos');
     };
 
     if (loading) {
@@ -51,7 +66,7 @@ const Home = () => {
                 <ul className="nav-links">
                     <li><a href="/">Início</a></li>
                     <li><a href="#services">Serviços</a></li>
-                    <li><a href="#agendamento">Agendamento</a></li>
+                    <li><a href="#" onClick={handleMeusAgendamentos}>Agendamento</a></li>
                     <li><a href="#contato">Contato</a></li>
                 </ul>
             </nav>
@@ -77,12 +92,11 @@ const Home = () => {
             {selectedService && (
                 <div className="selected-service" id="agendamento">
                     <h2>Serviço Selecionado</h2>
-                    {/* <p>{selectedService.name}</p> */}
-                    <p> BREVE DESCRIÇÃO DO SERVIÇO</p>
+                    <p>BREVE DESCRIÇÃO DO SERVIÇO</p>
                     <p>Duração: {selectedService.duration} minutos</p>
                     <p>Preço: R$ {selectedService.price}</p>
                     <button className="next-button" onClick={handleNextStep}>
-                        Agendamento {/* <-- ALTERADO O TEXTO AQUI */}
+                        Agendamento
                     </button>
                 </div>
             )}
