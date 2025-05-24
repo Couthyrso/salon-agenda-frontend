@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom'; // <-- ADICIONADO AQUI
-import './home.css';
+import { useNavigate } from 'react-router-dom';
+import './index.css';
 
 const Home = () => {
     const [services, setServices] = useState([]);
     const [selectedService, setSelectedService] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    const navigate = useNavigate(); // <-- ADICIONADO AQUI
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchServices = async () => {
@@ -36,7 +36,18 @@ const Home = () => {
     };
 
     const handleNextStep = () => {
-        navigate('/agendamento'); // <-- ADICIONADO AQUI
+        if (selectedService) {
+            navigate('/agendamento', { 
+                state: { 
+                    servicePrice: selectedService.price,
+                    serviceName: selectedService.name
+                } 
+            });
+        }
+    };
+
+    const handleMeusAgendamentos = () => {
+        navigate('/meus-agendamentos');
     };
 
     if (loading) {
@@ -51,7 +62,7 @@ const Home = () => {
                 <ul className="nav-links">
                     <li><a href="/">Início</a></li>
                     <li><a href="#services">Serviços</a></li>
-                    <li><a href="#agendamento">Agendamento</a></li>
+                    <li><a href="#" onClick={handleMeusAgendamentos}>Agendamento</a></li>
                     <li><a href="#contato">Contato</a></li>
                 </ul>
             </nav>
@@ -77,12 +88,11 @@ const Home = () => {
             {selectedService && (
                 <div className="selected-service" id="agendamento">
                     <h2>Serviço Selecionado</h2>
-                    {/* <p>{selectedService.name}</p> */}
-                    <p> BREVE DESCRIÇÃO DO SERVIÇO</p>
+                    <p>BREVE DESCRIÇÃO DO SERVIÇO</p>
                     <p>Duração: {selectedService.duration} minutos</p>
                     <p>Preço: R$ {selectedService.price}</p>
                     <button className="next-button" onClick={handleNextStep}>
-                        Agendamento {/* <-- ALTERADO O TEXTO AQUI */}
+                        Agendamento
                     </button>
                 </div>
             )}
