@@ -13,8 +13,8 @@ const Home = () => {
         const fetchServices = async () => {
             try {
                 const mockServices = [
-                    { id: 1, name: 'Corte de Cabelo', duration: 30, price: 50 },
-                    { id: 2, name: 'Coloração', duration: 60, price: 120 },
+                    { id: 1, name: 'pinto', duration: 30, price: 50 },
+                    { id: 2, name: 'bundo', duration: 60, price: 120 },
                     { id: 3, name: 'Manicure', duration: 45, price: 40 },
                     { id: 4, name: 'Pedicure', duration: 45, price: 45 },
                     { id: 5, name: 'Maquiagem', duration: 60, price: 80 }
