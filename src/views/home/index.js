@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './index.css';
+import bannerImage from './bannersite.jpg';
 
 const Home = () => {
     const [services, setServices] = useState([]);
@@ -19,7 +20,6 @@ const Home = () => {
                     { id: 4, name: 'Pedicure', duration: 45, price: 45 },
                     { id: 5, name: 'Maquiagem', duration: 60, price: 80 }
                 ];
-                
                 setServices(mockServices);
                 setLoading(false);
             } catch (error) {
@@ -27,7 +27,6 @@ const Home = () => {
                 setLoading(false);
             }
         };
-
         fetchServices();
     }, []);
 
@@ -37,11 +36,11 @@ const Home = () => {
 
     const handleNextStep = () => {
         if (selectedService) {
-            navigate('/agendamento', { 
-                state: { 
+            navigate('/agendamento', {
+                state: {
                     servicePrice: selectedService.price,
                     serviceName: selectedService.name
-                } 
+                }
             });
         }
     };
@@ -62,17 +61,23 @@ const Home = () => {
                 <ul className="nav-links">
                     <li><a href="/">Sair</a></li>
                     <li><a href="#services">Serviços</a></li>
-                    <li><a href="#" onClick={handleMeusAgendamentos}>Agendamento</a></li>
+                    <li><a href="#" onClick={handleMeusAgendamentos}>Agendamentos</a></li>
                     <li><a href="#contato">Contato</a></li>
                 </ul>
             </nav>
 
+            {/* Banner */}
+            <div className="banner">
+                <img src={bannerImage} alt="Banner do salão" />
+            </div>
+
+            {/* Conteúdo */}
             <h1>Serviços Disponíveis</h1>
-            
+
             <div className="services-section" id="services">
                 <div className="services-grid">
                     {services.map((service) => (
-                        <div 
+                        <div
                             key={service.id}
                             className={`service-card ${selectedService?.id === service.id ? 'selected' : ''}`}
                             onClick={() => handleServiceSelect(service)}
@@ -92,7 +97,7 @@ const Home = () => {
                     <p>Duração: {selectedService.duration} minutos</p>
                     <p>Preço: R$ {selectedService.price}</p>
                     <button className="next-button" onClick={handleNextStep}>
-                        Agendamento
+                        Agendar agora
                     </button>
                 </div>
             )}
