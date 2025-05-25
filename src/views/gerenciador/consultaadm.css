@@ -1,0 +1,27 @@
+.container {
+  padding: 20px;
+  max-width: 900px;
+  margin: auto;
+  font-family: Arial, sans-serif;
+}
+
+h1 {
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.agendamentos-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.agendamentos-table th,
+.agendamentos-table td {
+  border: 1px solid #ccc;
+  padding: 10px;
+  text-align: center;
+}
+
+.agendamentos-table th {
+  background-color: #f7f7f7;
+}
