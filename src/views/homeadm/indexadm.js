@@ -8,19 +8,18 @@ const HomeAdm = () => {
     const [loading, setLoading] = useState(true);
     const [showForm, setShowForm] = useState(false);
     const [newService, setNewService] = useState({
-        name: '', duration: '', price: '', description: ''
-    });
-    const [editingServiceId, setEditingServiceId] = useState(null);
-    const [editedService, setEditedService] = useState({
-        name: '', duration: '', price: '', description: ''
+        name: '',
+        duration: '',
+        price: '',
+        description: ''
     });
 
     const navigate = useNavigate();
 
     useEffect(() => {
-        const storedServices = localStorage.getItem('services');
-        if (storedServices) {
-            setServices(JSON.parse(storedServices));
+        const stored = localStorage.getItem('services');
+        if (stored) {
+            setServices(JSON.parse(stored));
             setLoading(false);
         } else {
             const mockServices = [
@@ -35,10 +34,6 @@ const HomeAdm = () => {
             setLoading(false);
         }
     }, []);
-
-    useEffect(() => {
-        localStorage.setItem('services', JSON.stringify(services));
-    }, [services]);
 
     const handleServiceSelect = (service) => setSelectedService(service);
 
@@ -56,33 +51,36 @@ const HomeAdm = () => {
     const handleMeusAgendamentos = () => navigate('/meus-agendamentos');
 
     const handleAddService = () => {
-        const newId = Date.now();
-        const newServiceEntry = {
-            id: newId,
-            name: newService.name,
-            duration: Number(newService.duration),
-            price: Number(newService.price),
-            description: newService.description
-        };
-        setServices([...services, newServiceEntry]);
+        const newId = services.length ? Math.max(...services.map(s => s.id)) + 1 : 1;
+        const updatedServices = [
+            ...services,
+            {
+                id: newId,
+                name: newService.name,
+                duration: Number(newService.duration),
+                price: Number(newService.price),
+                description: newService.description
+            }
+        ];
+        setServices(updatedServices);
+        localStorage.setItem('services', JSON.stringify(updatedServices));
         setNewService({ name: '', duration: '', price: '', description: '' });
         setShowForm(false);
     };
 
-    const handleEditClick = (service) => {
-        setEditingServiceId(service.id);
-        setEditedService({ ...service });
-    };
-
-    const handleSaveEdit = () => {
-        setServices(services.map(service =>
-            service.id === editingServiceId ? editedService : service
-        ));
-        setEditingServiceId(null);
-    };
-
     const handleDeleteService = (id) => {
-        setServices(services.filter(service => service.id !== id));
+        const updatedServices = services.filter(service => service.id !== id);
+        setServices(updatedServices);
+        localStorage.setItem('services', JSON.stringify(updatedServices));
+    };
+
+    const handleEditService = (id) => {
+        const service = services.find(s => s.id === id);
+        if (service) {
+            setNewService(service);
+            handleDeleteService(id);
+            setShowForm(true);
+        }
     };
 
     if (loading) return <div className="loading">Carregando serviços...</div>;
@@ -92,7 +90,7 @@ const HomeAdm = () => {
             <nav className="navbar">
                 <div className="logo">Salon Agenda</div>
                 <ul className="nav-links">
-                    <li><a href="/">Início</a></li>
+                    <li><a href="/">Sair</a></li>
                     <li><a href="#services">Serviços</a></li>
                     <li><a href="#" onClick={handleMeusAgendamentos}>Agendamento</a></li>
                     <li><a href="#contato">Contato</a></li>
@@ -102,13 +100,16 @@ const HomeAdm = () => {
             <h1>Serviços Disponíveis</h1>
 
             {showForm && (
-                <div className="add-service-form">
-                    <button className="close-button" onClick={() => setShowForm(false)}>×</button>
-                    <input type="text" placeholder="Nome do serviço" value={newService.name} onChange={(e) => setNewService({ ...newService, name: e.target.value })} />
-                    <input type="number" placeholder="Duração (minutos)" value={newService.duration} onChange={(e) => setNewService({ ...newService, duration: e.target.value })} />
-                    <input type="number" placeholder="Preço (R$)" value={newService.price} onChange={(e) => setNewService({ ...newService, price: e.target.value })} />
-                    <input type="text" placeholder="Descrição" value={newService.description} onChange={(e) => setNewService({ ...newService, description: e.target.value })} />
-                    <button onClick={handleAddService}>Adicionar Serviço</button>
+                <div className="modal-overlay" onClick={() => setShowForm(false)}>
+                    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                        <button className="close-button" onClick={() => setShowForm(false)}>×</button>
+                        <h2>Novo Serviço</h2>
+                        <input type="text" placeholder="Nome do serviço" value={newService.name} onChange={(e) => setNewService({ ...newService, name: e.target.value })} />
+                        <input type="number" placeholder="Duração (minutos)" value={newService.duration} onChange={(e) => setNewService({ ...newService, duration: e.target.value })} />
+                        <input type="number" placeholder="Preço (R$)" value={newService.price} onChange={(e) => setNewService({ ...newService, price: e.target.value })} />
+                        <input type="text" placeholder="Descrição" value={newService.description} onChange={(e) => setNewService({ ...newService, description: e.target.value })} />
+                        <button className='add-button' onClick={handleAddService}>Adicionar Serviço</button>
+                    </div>
                 </div>
             )}
 
@@ -116,26 +117,21 @@ const HomeAdm = () => {
                 <div className="services-grid">
                     {services.map((service) => (
                         <div key={service.id} className={`service-card ${selectedService?.id === service.id ? 'selected' : ''}`} onClick={() => handleServiceSelect(service)}>
-                            {editingServiceId === service.id ? (
-                                <div className="edit-form">
-                                    <input type="text" value={editedService.name} onChange={(e) => setEditedService({ ...editedService, name: e.target.value })} />
-                                    <input type="number" value={editedService.duration} onChange={(e) => setEditedService({ ...editedService, duration: e.target.value })} />
-                                    <input type="number" value={editedService.price} onChange={(e) => setEditedService({ ...editedService, price: e.target.value })} />
-                                    <input type="text" value={editedService.description} onChange={(e) => setEditedService({ ...editedService, description: e.target.value })} />
-                                    <button onClick={handleSaveEdit}>Salvar</button>
-                                </div>
-                            ) : (
-                                <>
-                                    <h3>{service.name}</h3>
-                                    <p>Duração: {service.duration} minutos</p>
-                                    <p>Preço: R$ {service.price}</p>
-                                    <p>{service.description}</p>
-                                    <button className="edit-button" onClick={(e) => { e.stopPropagation(); handleEditClick(service); }}>Editar</button>
-                                    <button className="delete-button" onClick={(e) => { e.stopPropagation(); handleDeleteService(service.id); }}>Apagar</button>
-                                </>
-                            )}
+                            <h3>{service.name}</h3>
+                            <p>Duração: {service.duration} minutos</p>
+                            <p>Preço: R$ {service.price}</p>
+                            <p>{service.description}</p>
+                            <div className="card-actions">
+                                <button className="edit-btn" onClick={(e) => { e.stopPropagation(); handleEditService(service.id); }}>✎</button>
+                                <button className="delete-btn" onClick={(e) => { e.stopPropagation(); handleDeleteService(service.id); }}>🗑</button>
+                            </div>
                         </div>
                     ))}
+
+                    {/* Botão "+" ao lado dos cards */}
+                    <div className="service-card add-card" onClick={() => setShowForm(!showForm)}>
+                        <span className="plus">+</span>
+                    </div>
                 </div>
             </div>
 
@@ -148,8 +144,6 @@ const HomeAdm = () => {
                     <button className="next-button" onClick={handleNextStep}>Agendamento</button>
                 </div>
             )}
-
-            <button className="add-button" onClick={() => setShowForm(!showForm)}>+</button>
         </div>
     );
 };
