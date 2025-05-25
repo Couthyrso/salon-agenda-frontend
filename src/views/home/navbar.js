@@ -7,6 +7,9 @@ const Navbar = () => {
   const toggleMenu = () => {
     setMenuAberto(!menuAberto);
   };
+<div className="banner">
+    <img src="/bannersite.jpg" alt="Banner do salão" />
+</div>
 
   return (
     <nav className="navbar">
