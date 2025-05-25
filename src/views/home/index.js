@@ -60,7 +60,7 @@ const Home = () => {
             <nav className="navbar">
                 <div className="logo">Salon Agenda</div>
                 <ul className="nav-links">
-                    <li><a href="/">Início</a></li>
+                    <li><a href="/">Sair</a></li>
                     <li><a href="#services">Serviços</a></li>
                     <li><a href="#" onClick={handleMeusAgendamentos}>Agendamento</a></li>
                     <li><a href="#contato">Contato</a></li>
