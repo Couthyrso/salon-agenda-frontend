@@ -3,7 +3,7 @@
 .agendamento-container {
   max-width: 600px;
   margin: 40px auto;
-  background-color: #f5f2ef;
+  background-color: #f0e3d6;
   border-radius: 20px;
   padding: 30px;
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
@@ -38,7 +38,7 @@ label {
 input[type="date"],
 .payment-select {
   padding: 10px;
-  border: 1px solid #d1bfa7;
+  border: 1px solid #4d3d29;
   border-radius: 12px;
   background-color: #fffaf4;
   color: #5c3d2e;
@@ -53,9 +53,9 @@ input[type="date"],
 
 .time-button {
   padding: 10px;
-  border: 1px solid #c5a58c;
-  background-color: #f1e7df;
-  color: #5c3d2e;
+  border: 1px solid #613d21;
+  background-color: #302d33;
+  color: #eeeae8;
   border-radius: 12px;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -66,8 +66,8 @@ input[type="date"],
 }
 
 .time-button.selected {
-  background-color: #a46b48;
-  color: white;
+  background-color: #d18676;
+  color: rgb(27, 26, 26);
   font-weight: bold;
   border: none;
 }
@@ -75,7 +75,7 @@ input[type="date"],
 .confirm-button,
 .back-button {
   padding: 12px 20px;
-  background-color: #7d4e3b;
+  background-color: #569247;
   color: white;
   border: none;
   border-radius: 14px;
