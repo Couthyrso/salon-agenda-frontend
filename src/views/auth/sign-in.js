@@ -25,7 +25,7 @@ const SignIn = () => {
 
       Cookies.set('token', token, { expires: 7 });
       
-      if (user.role === 'admin') {
+      if (user.admin === true) {
         navigate("/homeadm");
       } else {
         navigate("/home");
