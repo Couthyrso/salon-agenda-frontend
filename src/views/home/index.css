@@ -66,12 +66,17 @@ h1 {
 }
 
 .banner img {
-    width: 100%;
-    max-width: 1400px;
+    width: 90%; /* Aumentado */
+    max-width: 1512px;
     height: auto;
     border-radius: 40px;
     object-fit: cover;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    transition: transform 0.5s ease;
+}
+
+.banner img:hover {
+    transform: scale(1.03);
 }
 
 /* Seção de serviços */
@@ -106,7 +111,7 @@ h1 {
 }
 
 .service-card h3 {
-    color: #333;
+    color: #5f2323;
     margin-bottom: 10px;
     font-size: 1.4rem;
 }
@@ -125,6 +130,7 @@ h1 {
     margin-top: 20px;
 }
 
+/* Botão de continuar */
 .next-button {
     background: #5d403b;
     color: #ede7e1;
@@ -142,7 +148,7 @@ h1 {
     color: #353337;
 }
 
-/* Loading */
+/* Carregando */
 .loading {
     text-align: center;
     padding: 40px;
@@ -165,6 +171,7 @@ h1 {
 
     .banner img {
         width: 95%;
+        max-width: 100%;
         border-radius: 20px;
     }
 

@@ -62,7 +62,7 @@ const Home = () => {
                     <li><a href="/">Sair</a></li>
                     <li><a href="#services">Serviços</a></li>
                     <li><a href="#" onClick={handleMeusAgendamentos}>Agendamentos</a></li>
-                    <li><a href="#contato">Contato</a></li>
+                    <li><a href="#contato">Sobre Nós</a></li>
                 </ul>
             </nav>
 

@@ -75,7 +75,7 @@ input[type="date"],
 .confirm-button,
 .back-button {
   padding: 12px 20px;
-  background-color: #569247;
+  background-color: #5e392a;
   color: white;
   border: none;
   border-radius: 14px;
@@ -86,7 +86,7 @@ input[type="date"],
 }
 
 .confirm-button:hover {
-  background-color: #5e392a;
+  background-color: #569247;
 }
 
 .back-button {
@@ -128,7 +128,7 @@ input[type="date"],
 .home-button {
   margin-top: 30px;
   padding: 12px 20px;
-  background-color: #a46b48;
+  background-color: #302d33;
   color: white;
   border: none;
   border-radius: 14px;
