@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import './index.css';
 import bannerImage from './bannersite.jpg';
 
@@ -62,7 +62,7 @@ const Home = () => {
                     <li><a href="/">Sair</a></li>
                     <li><a href="#services">Serviços</a></li>
                     <li><a href="#" onClick={handleMeusAgendamentos}>Agendamentos</a></li>
-                    <li><a href="#contato">Sobre Nós</a></li>
+                    <li><Link to="/sobre">Sobre Nós</Link></li>
                 </ul>
             </nav>
 

@@ -7,6 +7,7 @@ import HomeAdm from './views/homeadm/indexadm';
 import Gerenciador from './views/gerenciador/consultaadm';
 import Agendamento from './views/agenda/agendamento';
 import MeusAgendamentos from './views/agenda/meus-agendamentos';
+import SobreNos from './views/sobre-nós/sobrenos';
 
 export default function AppRoutes() {
 
@@ -19,6 +20,7 @@ export default function AppRoutes() {
             <Route path='/gerenciador' element={<Gerenciador />}/>
             <Route path='/agendamento' element={<Agendamento />}/>
             <Route path='/meus-agendamentos' element={<MeusAgendamentos />}/>
+            <Route path='/sobrenos' element={<SobreNos />}/>
         </Routes>
     )
 }
