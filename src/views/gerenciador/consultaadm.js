@@ -4,7 +4,7 @@ import './consultaadm.css';
 const ConsultaAdm = () => {
   const [agendamentos, setAgendamentos] = useState([]);
 
-  // Simula fetch de dados do backend
+  // Simulação de dados do backend
   useEffect(() => {
     const mockData = [
       { id: 1, cliente: 'Maria Silva', servico: 'Corte de cabelo', data: '2025-05-25', horario: '14:00', status: 'Confirmado' },
