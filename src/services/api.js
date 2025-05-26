@@ -3,7 +3,7 @@ import Cookies from 'js-cookie';
 import { decryptToken } from '../helpers/cryptoHelpers';
 
 const api = axios.create({
-    baseURL: 'http://salon-agenda.test:8080/',
+    baseURL: 'http://salon-agenda-backend.test:8080/',
     withCredentials: true,
     withXSRFToken: false,
 });

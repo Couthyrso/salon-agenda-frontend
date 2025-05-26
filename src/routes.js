@@ -8,13 +8,14 @@ import Gerenciador from './views/gerenciador/consultaadm';
 import Agendamento from './views/agenda/agendamento';
 import MeusAgendamentos from './views/agenda/meus-agendamentos';
 import SobreNos from './views/sobre-nós/sobrenos';
-
+import SignUp from './views/auth/sign-up';
 export default function AppRoutes() {
 
     return (
         <Routes>
             <Route path='/' element={<SignIn />}/>
-            <Route path='/auth/sign-in' element={<SignIn />}/>          
+            <Route path='/auth/sign-in' element={<SignIn />}/>
+            <Route path='/auth/sign-up' element={<SignUp />}/>
             <Route path='/home' element={<Home />}/>
             <Route path='/homeadm' element={<HomeAdm />}/>
             <Route path='/gerenciador' element={<Gerenciador />}/>
