@@ -57,16 +57,17 @@ const Home = () => {
         <div className="home-container">
             {/* Navbar */}
             <nav className="navbar">
-                <div className="logo">Salon Agenda</div>
-                <ul className="nav-links">
-                    <li><a href="/">Sair</a></li>
-                    <li><a href="#services">Serviços</a></li>
-                    <li><a href="#" onClick={handleMeusAgendamentos}>Agendamentos</a></li>
-                    <li><Link to="/sobre">Sobre Nós</Link></li>
-                </ul>
-            </nav>
+    <div className="logo">Salon Agenda</div>
+    <ul className="nav-links">
+        <li><a href="/">Sair</a></li>
+        <li><a href="#services">Serviços</a></li>
+        <li><a href="#" onClick={handleMeusAgendamentos}>Agendamentos</a></li>
+        <li><Link to="/sobre">Sobre Nós</Link></li>
+    </ul>
+</nav>
 
-            {/* Banner */}
+
+              {/* Banner */}
             <div className="banner">
                 <img src={bannerImage} alt="Banner do salão" />
             </div>
