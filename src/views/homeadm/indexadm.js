@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './indexadm.css';
 import api from '../../services/api';
+import { ToastContainer, toast } from 'react-toastify';
 
-const HomeAdm = () => {
+    const HomeAdm = () => {
     const [services, setServices] = useState([]);
     const [selectedService, setSelectedService] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -12,8 +13,7 @@ const HomeAdm = () => {
         name: '',
         description: '',
         duration: '',
-        price: '',
-        status: true
+        price: ''
     });
 
     const navigate = useNavigate();
@@ -59,8 +59,7 @@ const HomeAdm = () => {
                 name: newService.name.trim(),
                 description: newService.description.trim(),
                 duration: Number(newService.duration),
-                price: Number(newService.price),
-                status: newService.status
+                price: Number(newService.price)
             };
 
             // Validação dos números
@@ -83,8 +82,7 @@ const HomeAdm = () => {
                     name: '', 
                     description: '', 
                     duration: '', 
-                    price: '', 
-                    status: true 
+                    price: ''
                 });
                 setShowForm(false);
                 alert('Serviço criado com sucesso!');
@@ -102,12 +100,16 @@ const HomeAdm = () => {
     };
 
     const handleDeleteService = async (id) => {
-        try {
-            await api.delete(`/api/services/${id}`);
-            setServices(prevServices => prevServices.filter(service => service.id !== id));
-        } catch (error) {
-            console.error('Erro ao excluir serviço:', error);
-            alert(error.response?.data?.message || 'Erro ao excluir serviço');
+        if (window.confirm('Tem certeza que deseja excluir este serviço?')) {
+            try {
+                await api.delete(`/api/services/${id}`);
+                // Remove o serviço da lista local
+                setServices(prevServices => prevServices.filter(service => service.id !== id));
+                toast.success('Serviço excluído com sucesso!', {autoClose: 3000});
+            } catch (error) {
+                console.error('Erro ao excluir serviço:', error);
+                toast.error(error.response?.data?.message || 'Erro ao excluir serviço', {autoClose: 3000});
+            }
         }
     };
 
@@ -130,13 +132,13 @@ const HomeAdm = () => {
                 name: newService.name.trim(),
                 description: newService.description.trim(),
                 duration: Number(newService.duration),
-                price: Number(newService.price),
-                status: newService.status
+                price: Number(newService.price)
             };
 
             const response = await api.put(`/api/services/${newService.id}`, serviceData);
 
             if (response.data) {
+                // Atualiza a lista de serviços
                 setServices(prevServices => 
                     prevServices.map(service => 
                         service.id === newService.id ? response.data : service
@@ -147,7 +149,6 @@ const HomeAdm = () => {
                     description: '', 
                     duration: '', 
                     price: '', 
-                    status: true 
                 });
                 setShowForm(false);
                 alert('Serviço atualizado com sucesso!');
@@ -176,7 +177,7 @@ const HomeAdm = () => {
                     <li><a href="#contato">Contato</a></li>
                 </ul>
             </nav>
-
+            <ToastContainer/>
             <h1>Serviços Disponíveis</h1>
 
             <div className="services-section" id="services">
@@ -195,7 +196,6 @@ const HomeAdm = () => {
                             <p>{service.description}</p>
                             <p>Duração: {service.duration} minutos</p>
                             <p>Preço: R$ {service.price}</p>
-                            <p>Status: {service.status ? 'Ativo' : 'Inativo'}</p>
                             <div className="service-actions">
                                 <button onClick={(e) => {
                                     e.stopPropagation();
@@ -203,10 +203,7 @@ const HomeAdm = () => {
                                 }}>
                                     Editar
                                 </button>
-                                <button onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleDeleteService(service.id);
-                                }}>
+                                <button onClick={() => handleDeleteService(service.id)}>
                                     Excluir
                                 </button>
                             </div>
@@ -254,16 +251,6 @@ const HomeAdm = () => {
                                 required
                             />
                         </div>
-                        <div className="form-group">
-                            <label>Status:</label>
-                            <select
-                                value={newService.status}
-                                onChange={(e) => setNewService({...newService, status: e.target.value === 'true'})}
-                            >
-                                <option value="true">Ativo</option>
-                                <option value="false">Inativo</option>
-                            </select>
-                        </div>
                         <div className="modal-buttons">
                             <button onClick={newService.id ? handleUpdateService : handleAddService}>
                                 {newService.id ? 'Atualizar Serviço' : 'Adicionar Serviço'}
@@ -274,8 +261,7 @@ const HomeAdm = () => {
                                     name: '',
                                     description: '',
                                     duration: '',
-                                    price: '',
-                                    status: true
+                                    price: ''
                                 });
                             }}>
                                 Cancelar

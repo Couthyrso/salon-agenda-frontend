@@ -15,18 +15,8 @@ const Home = () => {
         const fetchServices = async () => {
             try {
                 const response = await api.get('/api/services');
-                console.log('Serviços recebidos:', response.data); // Log para debug
                 
-                // Filtra apenas os serviços ativos, considerando diferentes formatos possíveis
-                const activeServices = response.data.filter(service => {
-                    // Converte para booleano para garantir a comparação correta
-                    const isActive = Boolean(service.status);
-                    console.log(`Serviço ${service.name} - Status: ${service.status} - isActive: ${isActive}`); // Log para debug
-                    return isActive;
-                });
-                
-                console.log('Serviços ativos:', activeServices); // Log para debug
-                setServices(activeServices);
+                setServices(response.data);
                 setLoading(false);
             } catch (error) {
                 console.error('Erro ao carregar serviços:', error);
