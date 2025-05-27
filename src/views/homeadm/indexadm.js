@@ -3,12 +3,17 @@ import { useNavigate } from 'react-router-dom';
 import './indexadm.css';
 import api from '../../services/api';
 import { ToastContainer, toast } from 'react-toastify';
+import { Container, Button, Modal } from 'react-bootstrap';
+import AnimationWarningLottie from '../../components/AnimationWarningDeleteConfim/AnimationWarningLottie';
 
-    const HomeAdm = () => {
+const HomeAdm = () => {
     const [services, setServices] = useState([]);
     const [selectedService, setSelectedService] = useState(null);
     const [loading, setLoading] = useState(true);
     const [showForm, setShowForm] = useState(false);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [serviceIdToDelete, setServiceIdToDelete] = useState(null);
+    const [serviceNameToDelete, setServiceNameToDelete] = useState('');
     const [newService, setNewService] = useState({
         name: '',
         description: '',
@@ -16,7 +21,46 @@ import { ToastContainer, toast } from 'react-toastify';
         price: ''
     });
 
-    const navigate = useNavigate();
+    const handleConfirmDelete = () => {
+        if (serviceIdToDelete) {
+            handleDeleteService(serviceIdToDelete);
+        }
+        setShowDeleteModal(false);
+    };
+
+    const handleOpenDeleteModal = (serviceId, serviceName) => {
+        setServiceIdToDelete(serviceId);
+        setServiceNameToDelete(serviceName);
+        setShowDeleteModal(true);
+    };
+
+    function OpenDeleteModal(props) {
+        return (
+            <Modal
+                show={props.show}
+                onHide={props.onHide}
+                aria-labelledby='contained-modal-title-vcenter'
+                centered>
+                <Modal.Header closeButton>
+                    <Modal.Title>Confirmar exclusão de o serviço</Modal.Title>
+                </Modal.Header>
+                <Modal.Body id='modalBody'>
+                    <div className="d-flex justify-content-center">
+                        <AnimationWarningLottie />
+                    </div>
+                    <div className="d-flex justify-content-center">
+                        <p>
+                            Tem certeza que deseja excluir "{props.serviceName}" ?
+                        </p>
+                    </div>
+                </Modal.Body>
+                <Modal.Footer id='modalFooter'>
+                    <Button id='yesButton' onClick={props.onConfirm}>Sim</Button>
+                    <Button id='noButton' onClick={props.onHide} >Não</Button>
+                </Modal.Footer>
+            </Modal>
+        );
+    }
 
     useEffect(() => {
         const fetchServices = async () => {
@@ -34,21 +78,8 @@ import { ToastContainer, toast } from 'react-toastify';
 
     const handleServiceSelect = (service) => setSelectedService(service);
 
-    const handleNextStep = () => {
-        if (selectedService) {
-            navigate('/agendamento', {
-                state: {
-                    servicePrice: selectedService.price,
-                    serviceName: selectedService.name
-                }
-            });
-        }
-    };
-
-    const handleMeusAgendamentos = () => navigate('/meus-agendamentos');
-
     const handleAddService = async () => {
-        // Validação dos campos
+
         if (!newService.name || !newService.description || !newService.duration || !newService.price) {
             alert('Por favor, preencha todos os campos');
             return;
@@ -62,7 +93,6 @@ import { ToastContainer, toast } from 'react-toastify';
                 price: Number(newService.price)
             };
 
-            // Validação dos números
             if (isNaN(serviceData.duration) || serviceData.duration <= 0) {
                 alert('A duração deve ser um número positivo');
                 return;
@@ -76,49 +106,63 @@ import { ToastContainer, toast } from 'react-toastify';
             const response = await api.post('/api/services/store', serviceData);
 
             if (response.data) {
-                // Atualiza a lista de serviços com o novo serviço
                 setServices(prevServices => [...prevServices, response.data]);
-                setNewService({ 
-                    name: '', 
-                    description: '', 
-                    duration: '', 
+                setNewService({
+                    name: '',
+                    description: '',
+                    duration: '',
                     price: ''
                 });
                 setShowForm(false);
-                alert('Serviço criado com sucesso!');
+                toast.success('Serviço criado com sucesso!', { autoClose: 3000 });
             }
         } catch (error) {
             console.error('Erro ao criar serviço:', error);
             if (error.response?.data?.errors) {
-                // Se houver erros de validação específicos
                 const errorMessages = Object.values(error.response.data.errors).flat();
-                alert(errorMessages.join('\n'));
+                toast.error(errorMessages.join('\n'), { autoClose: 3000 });
             } else {
-                alert(error.response?.data?.message || 'Erro ao criar serviço. Por favor, tente novamente.');
+                toast.error(error.response?.data?.message || 'Erro ao criar serviço. Por favor, tente novamente.', { autoClose: 3000 });
             }
         }
     };
 
     const handleDeleteService = async (id) => {
-        if (window.confirm('Tem certeza que deseja excluir este serviço?')) {
-            try {
-                await api.delete(`/api/services/${id}`);
-                // Remove o serviço da lista local
-                setServices(prevServices => prevServices.filter(service => service.id !== id));
-                toast.success('Serviço excluído com sucesso!', {autoClose: 3000});
-            } catch (error) {
-                console.error('Erro ao excluir serviço:', error);
-                toast.error(error.response?.data?.message || 'Erro ao excluir serviço', {autoClose: 3000});
-            }
+        try {
+            await api.delete(`/api/services/${id}`);
+            setServices(prevServices => prevServices.filter(service => service.id !== id));
+            toast.success('Serviço excluído com sucesso!', { autoClose: 3000 });
+        } catch (error) {
+            console.error('Erro ao excluir serviço:', error);
+            toast.error(error.response?.data?.message || 'Erro ao excluir serviço', { autoClose: 3000 });
         }
     };
 
-    const handleEditService = async (id) => {
+    const handleEditService = async (id, e) => {
+        if (e) {
+            e.stopPropagation();
+        }
+        console.log('Editando serviço:', id);
         const service = services.find(s => s.id === id);
         if (service) {
+            console.log('Serviço encontrado:', service);
             setNewService(service);
             setShowForm(true);
         }
+    };
+
+    const handleAddNewService = (e) => {
+        if (e) {
+            e.stopPropagation();
+        }
+        console.log('Abrindo formulário para novo serviço');
+        setNewService({
+            name: '',
+            description: '',
+            duration: '',
+            price: ''
+        });
+        setShowForm(true);
     };
 
     const handleUpdateService = async () => {
@@ -138,28 +182,27 @@ import { ToastContainer, toast } from 'react-toastify';
             const response = await api.put(`/api/services/${newService.id}`, serviceData);
 
             if (response.data) {
-                // Atualiza a lista de serviços
-                setServices(prevServices => 
-                    prevServices.map(service => 
+                setServices(prevServices =>
+                    prevServices.map(service =>
                         service.id === newService.id ? response.data : service
                     )
                 );
-                setNewService({ 
-                    name: '', 
-                    description: '', 
-                    duration: '', 
-                    price: '', 
+                setNewService({
+                    name: '',
+                    description: '',
+                    duration: '',
+                    price: '',
                 });
                 setShowForm(false);
-                alert('Serviço atualizado com sucesso!');
+                toast.success('Serviço atualizado com sucesso!', { autoClose: 3000 });
             }
         } catch (error) {
             console.error('Erro ao atualizar serviço:', error);
             if (error.response?.data?.errors) {
                 const errorMessages = Object.values(error.response.data.errors).flat();
-                alert(errorMessages.join('\n'));
+                toast.error(errorMessages.join('\n'), { autoClose: 3000 });
             } else {
-                alert(error.response?.data?.message || 'Erro ao atualizar serviço');
+                toast.error(error.response?.data?.message || 'Erro ao atualizar serviço', { autoClose: 3000 });
             }
         }
     };
@@ -167,110 +210,134 @@ import { ToastContainer, toast } from 'react-toastify';
     if (loading) return <div className="loading">Carregando serviços...</div>;
 
     return (
-        <div className="homeadm-container">
-            <nav className="navbar">
-                <div className="logo">Salon Agenda</div>
-                <ul className="nav-links">
-                    <li><a href="/">Sair</a></li>
-                    <li><a href="#services">Serviços</a></li>
-                    <li><a href="/gerenciador">Consulta</a></li>
-                    <li><a href="#contato">Contato</a></li>
-                </ul>
-            </nav>
-            <ToastContainer/>
-            <h1>Serviços Disponíveis</h1>
+        <Container fluid className="body homeadm-container">
+            <div className="homeadm-container">
+                <nav className="navbar">
+                    <div className="logo">Salon Agenda</div>
+                    <ul className="nav-links">
+                        <li><a href="/">Sair</a></li>
+                        <li><a href="#services">Serviços</a></li>
+                        <li><a href="/gerenciador">Consulta</a></li>
+                        <li><a href="#contato">Contato</a></li>
+                    </ul>
+                </nav>
+                <ToastContainer />
+                <OpenDeleteModal
+                    show={showDeleteModal}
+                    onHide={() => setShowDeleteModal(false)}
+                    onConfirm={handleConfirmDelete}
+                    serviceName={serviceNameToDelete}
+                />
+                <h1>Serviços Disponíveis</h1>
 
-            <div className="services-section" id="services">
-                <button className="add-button" onClick={() => setShowForm(true)}>
-                    Adicionar Novo Serviço
-                </button>
+                <div className="services-section" id="services">
+                    <button
+                        className="add-button"
+                        onClick={handleAddNewService}
+                    >
+                        Adicionar Novo Serviço
+                    </button>
 
-                <div className="services-grid">
-                    {services.map((service) => (
-                        <div
-                            key={service.id}
-                            className={`service-card ${selectedService?.id === service.id ? 'selected' : ''}`}
-                            onClick={() => handleServiceSelect(service)}
-                        >
-                            <h3>{service.name}</h3>
-                            <p>{service.description}</p>
-                            <p>Duração: {service.duration} minutos</p>
-                            <p>Preço: R$ {service.price}</p>
-                            <div className="service-actions">
-                                <button onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleEditService(service.id);
-                                }}>
-                                    Editar
+                    <div className="services-grid">
+                        {services.map((service, index) => (
+                            <div
+                                key={index}
+                                className={`service-card ${selectedService?.id === service.id ? 'selected' : ''}`}
+                                onClick={() => handleServiceSelect(service)}
+                            >
+                                <h3 placeholder="service-name">{service.name}</h3>
+                                <p>{service.description}</p>
+                                <p>Duração: {service.duration} minutos</p>
+                                <p>Preço: R$ {service.price}</p>
+                                <div className="service-actions">
+                                    <button
+                                        className="edit-button w-100"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleEditService(service.id, e);
+                                        }}
+                                    >
+                                        Editar
+                                    </button>
+                                    <button
+                                        className="delete-button w-100"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleOpenDeleteModal(service.id, service.name);
+                                        }}
+                                    >
+                                        Excluir
+                                    </button>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                {showForm && (
+                    <div className="modal-overlay">
+                        <div className="modal-content">
+                            <h2>{newService.id ? 'Editar Serviço' : 'Novo Serviço'}</h2>
+                            <div className="form-group">
+                                <label>Nome:</label>
+                                <input
+                                    type="text"
+                                    value={newService.name}
+                                    onChange={(e) => setNewService({ ...newService, name: e.target.value })}
+                                    required
+                                    placeholder='Nome do serviço'
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label>Descrição:</label>
+                                <textarea
+                                    value={newService.description}
+                                    onChange={(e) => setNewService({ ...newService, description: e.target.value })}
+                                    required
+                                    placeholder='Descrição do serviço'
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label>Duração (minutos):</label>
+                                <input
+                                    type="number"
+                                    value={newService.duration}
+                                    onChange={(e) => setNewService({ ...newService, duration: e.target.value })}
+                                    required
+                                    placeholder='Duração do serviço'
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label>Preço:</label>
+                                <input
+                                    type="number"
+                                    value={newService.price}
+                                    onChange={(e) => setNewService({ ...newService, price: e.target.value })}
+                                    required
+                                    placeholder='Preço do serviço'
+                                />
+                            </div>
+                            <div className="modal-buttons">
+                                <button onClick={newService.id ? handleUpdateService : handleAddService}>
+                                    {newService.id ? 'Atualizar Serviço' : 'Adicionar Serviço'}
                                 </button>
-                                <button onClick={() => handleDeleteService(service.id)}>
-                                    Excluir
+                                <button onClick={() => {
+                                    setShowForm(false);
+                                    setNewService({
+                                        name: '',
+                                        description: '',
+                                        duration: '',
+                                        price: ''
+                                    });
+                                }}>
+                                    Cancelar
                                 </button>
                             </div>
                         </div>
-                    ))}
-                </div>
-            </div>
-
-            {showForm && (
-                <div className="modal">
-                    <div className="modal-content">
-                        <h2>{newService.id ? 'Editar Serviço' : 'Novo Serviço'}</h2>
-                        <div className="form-group">
-                            <label>Nome:</label>
-                            <input
-                                type="text"
-                                value={newService.name}
-                                onChange={(e) => setNewService({...newService, name: e.target.value})}
-                                required
-                            />
-                        </div>
-                        <div className="form-group">
-                            <label>Descrição:</label>
-                            <textarea
-                                value={newService.description}
-                                onChange={(e) => setNewService({...newService, description: e.target.value})}
-                                required
-                            />
-                        </div>
-                        <div className="form-group">
-                            <label>Duração (minutos):</label>
-                            <input
-                                type="number"
-                                value={newService.duration}
-                                onChange={(e) => setNewService({...newService, duration: e.target.value})}
-                                required
-                            />
-                        </div>
-                        <div className="form-group">
-                            <label>Preço:</label>
-                            <input
-                                type="number"
-                                value={newService.price}
-                                onChange={(e) => setNewService({...newService, price: e.target.value})}
-                                required
-                            />
-                        </div>
-                        <div className="modal-buttons">
-                            <button onClick={newService.id ? handleUpdateService : handleAddService}>
-                                {newService.id ? 'Atualizar Serviço' : 'Adicionar Serviço'}
-                            </button>
-                            <button onClick={() => {
-                                setShowForm(false);
-                                setNewService({
-                                    name: '',
-                                    description: '',
-                                    duration: '',
-                                    price: ''
-                                });
-                            }}>
-                                Cancelar
-                            </button>
-                        </div>
                     </div>
-                </div>
-            )}
-        </div>
+                )}
+            </div>
+        </Container>
     );
 };
 

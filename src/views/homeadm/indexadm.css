@@ -1,45 +1,46 @@
 .add-card {
-  margin-top: 55px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: white;
-  border: 2px dashed #ccc;
-  border-radius: 50%;
-  width: 100px;
-  height: 100px;
-  cursor: pointer;
-  font-size: 40px;
-  color: black;
-  transition: all 0.3s ease;
+    margin-top: 55px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: white;
+    border: 2px dashed #ccc;
+    border-radius: 50%;
+    width: 100px;
+    height: 100px;
+    cursor: pointer;
+    font-size: 40px;
+    color: black;
+    transition: all 0.3s ease;
 }
 
 .add-card:hover {
-  background-color: #f0f0f0;
+    background-color: #f0f0f0;
 }
 
 .card-actions {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 10px;
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
 }
 
-.edit-btn, .delete-btn {
-  background: none;
-  color: black;
-  border: none;
-  font-size: 18px;
-  cursor: pointer;
+.edit-btn,
+.delete-btn {
+    background: none;
+    color: black;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
 }
 
 .edit-btn:hover {
-  color: #f0f0f0;
-  background-color: #5087ac;
+    color: #f0f0f0;
+    background-color: #5087ac;
 }
 
 .delete-btn:hover {
-  color: black;
-  background-color: rgb(252, 105, 105);
+    color: black;
+    background-color: rgb(252, 105, 105);
 }
 
 .modal-overlay {
@@ -48,7 +49,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.7);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -56,13 +57,14 @@
 }
 
 .modal-content {
-    background: white;
+    background-color: #353337 !important;
+    color: white !important;
     padding: 2rem;
     border-radius: 8px;
     width: 90%;
     max-width: 500px;
     position: relative;
-    color: #333;
+    z-index: 1001;
 }
 
 .form-group {
@@ -149,17 +151,20 @@
     transition: all 0.3s ease;
 }
 
-.service-actions button:nth-child(1) { /* Editar */
+.service-actions button:nth-child(1) {
+    /* Editar */
     background-color: #4CAF50;
     color: white;
 }
 
-.service-actions button:nth-child(2) { /* Ativar/Desativar */
+.service-actions button:nth-child(2) {
+    /* Ativar/Desativar */
     background-color: #2196F3;
     color: white;
 }
 
-.service-actions button:nth-child(3) { /* Excluir */
+.service-actions button:nth-child(3) {
+    /* Excluir */
     background-color: #f44336;
     color: white;
 }
@@ -173,7 +178,7 @@
     background: #ede7e1;
     border-radius: 18px;
     padding: 24px;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
     cursor: pointer;
     transition: all 0.3s ease;
     position: relative;
@@ -194,4 +199,123 @@
     padding: 4px 8px;
     border-radius: 4px;
     font-size: 12px;
+}
+
+.body {
+    margin: 0;
+    background-color: #353337 !important;
+    color: white !important;
+    min-height: 100vh !important;
+}
+
+.homeadm-container {
+    background-color: #353337 !important;
+    color: white !important;
+    min-height: 100vh !important;
+}
+
+.navbar {
+    background-color: #353337 !important;
+    color: white !important;
+}
+
+.nav-links a {
+    color: white !important;
+}
+
+.nav-links a:hover {
+    color: #d18676 !important;
+}
+
+.modal-header {
+    background-color: #353337 !important;
+    color: white !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.modal-footer {
+    background-color: #353337 !important;
+    color: white !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.modal-title {
+    color: white !important;
+}
+
+.btn-close {
+    filter: invert(1) grayscale(100%) brightness(200%) !important;
+}
+
+#yesButton,
+#noButton {
+    background-color: #d18676 !important;
+    color: white !important;
+    border: none !important;
+}
+
+#yesButton:hover,
+#noButton:hover {
+    background-color: #c17565 !important;
+    opacity: 0.9;
+}
+
+.edit-button,
+.delete-button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    margin: 0 5px;
+}
+
+.edit-button {
+    background-color: #c17565 !important;
+    color: white;
+    height: 37px;
+    position: relative;
+    top: 15px;
+}
+
+.delete-button {
+    background-color: #f44336 !important;
+    color: white;
+}
+
+.edit-button:hover,
+.delete-button:hover {
+    opacity: 0.9;
+    transform: translateY(-2px);
+}
+
+.modal-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.modal-buttons button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+.modal-buttons button:first-child {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.modal-buttons button:last-child {
+    background-color: #f44336 !;
+    color: white;
+}
+
+.modal-buttons button:hover {
+    opacity: 0.9;
 }
