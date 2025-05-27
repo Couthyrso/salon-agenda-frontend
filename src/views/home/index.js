@@ -15,8 +15,17 @@ const Home = () => {
         const fetchServices = async () => {
             try {
                 const response = await api.get('/api/services');
-                // Filtra apenas os serviços ativos
-                const activeServices = response.data.filter(service => service.status === true);
+                console.log('Serviços recebidos:', response.data); // Log para debug
+                
+                // Filtra apenas os serviços ativos, considerando diferentes formatos possíveis
+                const activeServices = response.data.filter(service => {
+                    // Converte para booleano para garantir a comparação correta
+                    const isActive = Boolean(service.status);
+                    console.log(`Serviço ${service.name} - Status: ${service.status} - isActive: ${isActive}`); // Log para debug
+                    return isActive;
+                });
+                
+                console.log('Serviços ativos:', activeServices); // Log para debug
                 setServices(activeServices);
                 setLoading(false);
             } catch (error) {
@@ -36,7 +45,8 @@ const Home = () => {
             navigate('/agendamento', {
                 state: {
                     servicePrice: selectedService.price,
-                    serviceName: selectedService.name
+                    serviceName: selectedService.name,
+                    serviceId: selectedService.id
                 }
             });
         }
@@ -59,47 +69,51 @@ const Home = () => {
                     <li><a href="/">Sair</a></li>
                     <li><a href="#services">Serviços</a></li>
                     <li><a href="/meus-agendamentos">Meus Agendamentos</a></li>
-                    <li><a href="#contato">Contato</a></li>
+                    <li><Link to="/sobre">Sobre Nós</Link></li>
                 </ul>
             </nav>
 
             {/* Banner */}
             <div className="banner">
-                <img src={bannerImage} alt="Banner" />
+                <img src={bannerImage} alt="Banner do salão" />
             </div>
 
             {/* Conteúdo */}
             <h1>Serviços Disponíveis</h1>
 
             <div className="services-section" id="services">
-                <div className="services-grid">
-                    {services.map((service) => (
-                        <div
-                            key={service.id}
-                            className={`service-card ${selectedService?.id === service.id ? 'selected' : ''}`}
-                            onClick={() => handleServiceSelect(service)}
-                        >
-                            <h3>{service.name}</h3>
-                            <p>{service.description}</p>
-                            <p>Duração: {service.duration} minutos</p>
-                            <p>Preço: R$ {service.price}</p>
-                        </div>
-                    ))}
-                </div>
-
-                {selectedService && (
-                    <div className="selected-service">
-                        <h2>Serviço Selecionado</h2>
-                        <p><strong>Nome:</strong> {selectedService.name}</p>
-                        <p><strong>Descrição:</strong> {selectedService.description}</p>
-                        <p><strong>Duração:</strong> {selectedService.duration} minutos</p>
-                        <p className="price"><strong>Preço:</strong> R$ {selectedService.price}</p>
-                        <button className="next-button" onClick={handleNextStep}>
-                            Agendar Horário
-                        </button>
+                {services.length === 0 ? (
+                    <p className="no-services">Nenhum serviço disponível no momento.</p>
+                ) : (
+                    <div className="services-grid">
+                        {services.map((service) => (
+                            <div
+                                key={service.id}
+                                className={`service-card ${selectedService?.id === service.id ? 'selected' : ''}`}
+                                onClick={() => handleServiceSelect(service)}
+                            >
+                                <h3>{service.name}</h3>
+                                <p>{service.description}</p>
+                                <p>Duração: {service.duration} minutos</p>
+                                <p>Preço: R$ {service.price}</p>
+                            </div>
+                        ))}
                     </div>
                 )}
             </div>
+
+            {selectedService && (
+                <div className="selected-service">
+                    <h2>Serviço Selecionado</h2>
+                    <p><strong>Nome:</strong> {selectedService.name}</p>
+                    <p><strong>Descrição:</strong> {selectedService.description}</p>
+                    <p><strong>Duração:</strong> {selectedService.duration} minutos</p>
+                    <p><strong>Preço:</strong> R$ {selectedService.price}</p>
+                    <button className="next-button" onClick={handleNextStep}>
+                        Agendar Horário
+                    </button>
+                </div>
+            )}
         </div>
     );
 };
