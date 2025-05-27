@@ -133,3 +133,65 @@
 .close-button:hover {
     color: #333;
 }
+
+.service-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.service-actions button {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+.service-actions button:nth-child(1) { /* Editar */
+    background-color: #4CAF50;
+    color: white;
+}
+
+.service-actions button:nth-child(2) { /* Ativar/Desativar */
+    background-color: #2196F3;
+    color: white;
+}
+
+.service-actions button:nth-child(3) { /* Excluir */
+    background-color: #f44336;
+    color: white;
+}
+
+.service-actions button:hover {
+    opacity: 0.9;
+    transform: translateY(-2px);
+}
+
+.service-card {
+    background: #ede7e1;
+    border-radius: 18px;
+    padding: 24px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.service-card.inactive {
+    opacity: 0.7;
+    background: #f5f5f5;
+}
+
+.service-card.inactive::after {
+    content: 'Inativo';
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: #ff9800;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+}
