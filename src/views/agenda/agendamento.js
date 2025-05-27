@@ -2,11 +2,18 @@ import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import api from '../../services/api';
 import './agendamento.css';
+import Cookies from 'js-cookie';
+import { ToastContainer, toast } from 'react-toastify';
 
 const Agendamento = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const { servicePrice, serviceName } = location.state || {};
+
+    const formatDate = (dateStr) => {
+        const [year, month, day] = dateStr.split('-');
+        return `${day}/${month}/${year}`;
+    };
 
     // Redireciona se não houver dados do serviço
     useEffect(() => {
@@ -25,24 +32,25 @@ const Agendamento = () => {
 
     // Função para calcular o valor final do pagamento
     const calculateFinalPrice = () => {
-        let finalPrice = servicePrice || 0;
+        const price = Number(servicePrice) || 0;
+        let finalPrice = price;
 
         // Aplica taxas ou descontos baseado no método de pagamento
         switch (paymentMethod) {
             case 'credit':
                 // Taxa de 5% para cartão de crédito
-                finalPrice = servicePrice;
+                finalPrice = price;
                 break;
             case 'debit':
                 // Sem taxa para débito
-                finalPrice = servicePrice;
+                finalPrice = price;
                 break;
             case 'pix':
                 // 5% de desconto para PIX
-                finalPrice = servicePrice;
+                finalPrice = price;
                 break;
             default:
-                finalPrice = servicePrice;
+                finalPrice = price;
         }
 
         return finalPrice;
@@ -61,21 +69,20 @@ const Agendamento = () => {
         return new Date(now.getTime() - (now.getTimezoneOffset() * 60000));
     };
 
-    // Função para verificar se um horário já passou
-    const isTimePassed = (date, time) => {
-        const now = getBrasiliaTime();
-        const [hours, minutes] = time.split(':');
-        const selectedDateTime = new Date(date);
-        selectedDateTime.setHours(parseInt(hours), parseInt(minutes), 0);
-
-        return selectedDateTime < now;
+    // Função para verificar se é hoje
+    const isToday = (dateString) => {
+        const today = new Date();
+        const selectedDate = new Date(dateString);
+        return selectedDate.toDateString() === today.toDateString();
     };
 
-    // Função para verificar se é o dia atual
-    const isToday = (date) => {
-        const today = getBrasiliaTime();
-        const selectedDate = new Date(date);
-        return selectedDate.toDateString() === today.toDateString();
+    // Função para verificar se o horário já passou
+    const isTimePassed = (dateString, timeString) => {
+        const now = new Date();
+        const [hours, minutes] = timeString.split(':').map(Number);
+        const selectedDateTime = new Date(dateString);
+        selectedDateTime.setHours(hours, minutes, 0, 0);
+        return selectedDateTime < now;
     };
 
     // Função para atualizar horários disponíveis quando a data é selecionada
@@ -133,24 +140,17 @@ const Agendamento = () => {
             preco: servicePrice || 0,
             metodoPagamento: paymentMethod === 'credit' ? 'Cartão de Crédito' : 
                            paymentMethod === 'debit' ? 'Cartão de Débito' : 
-                           paymentMethod === 'pix' ? 'PIX' : 'Não definido',
-            status: 'Agendado'
+                           paymentMethod === 'pix' ? 'PIX' : 'Não definido'
         };
 
-        try {
-            // Recupera agendamentos existentes
-            const agendamentosExistentes = JSON.parse(localStorage.getItem('agendamentos') || '[]');
-            
-            // Adiciona o novo agendamento
-            const agendamentosAtualizados = [...agendamentosExistentes, novoAgendamento];
-            
-            // Salva no localStorage
-            localStorage.setItem('agendamentos', JSON.stringify(agendamentosAtualizados));
-            return true;
-        } catch (error) {
-            console.error('Erro ao salvar agendamento:', error);
-            return false;
-        }
+        // Recupera agendamentos existentes
+        const agendamentosExistentes = JSON.parse(localStorage.getItem('agendamentos') || '[]');
+        
+        // Adiciona o novo agendamento
+        const agendamentosAtualizados = [...agendamentosExistentes, novoAgendamento];
+        
+        // Salva no localStorage
+        localStorage.setItem('agendamentos', JSON.stringify(agendamentosAtualizados));
     };
 
     // Função para processar o pagamento
@@ -161,30 +161,52 @@ const Agendamento = () => {
         }
         
         try {
-            const response = await api.post('/api/appointments/store', {
-                service: serviceName,
-                date: selectedDate,
-                time: selectedTime,
-                price: servicePrice,
+
+            // Monta data e hora no formato "YYYY-MM-DD HH:MM:SS"
+            const appointmentDateTime = `${selectedDate} ${selectedTime}:00`;
+
+            const appointmentData = {
+                service_id: location.state.serviceId,
+                appointment_date: appointmentDateTime,
                 payment_method: paymentMethod,
-                status: 'pending'
-            });
+                status: 'pending',
+                user_id: Cookies.get('userId')
+            };
+
+
+            console.log('Dados do agendamento:', appointmentData);
+
+            const response = await api.post('/api/appointments/store', appointmentData);
 
             if (response.data) {
-                const salvou = salvarAgendamento();
-                if (salvou) {
-                    alert('Agendamento realizado com sucesso!');
-                    navigate('/meus-agendamentos', { replace: true });
-                } else {
-                    setPaymentError('Erro ao salvar o agendamento localmente');
-                }
+                // Salva no localStorage
+                const novoAgendamento = {
+                    id: Date.now(),
+                    servico: serviceName,
+                    data: selectedDate,
+                    horario: selectedTime,
+                    preco: Number(servicePrice),
+                    metodoPagamento: paymentMethod === 'credit' ? 'Cartão de Crédito' : 
+                                   paymentMethod === 'debit' ? 'Cartão de Débito' : 
+                                   paymentMethod === 'pix' ? 'PIX' : 'Não definido',
+                    status: 'Agendado'
+                };
+
+                const agendamentosExistentes = JSON.parse(localStorage.getItem('agendamentos') || '[]');
+                const agendamentosAtualizados = [...agendamentosExistentes, novoAgendamento];
+                localStorage.setItem('agendamentos', JSON.stringify(agendamentosAtualizados));
+
+                toast.success('Agendamento realizado com sucesso!', {autoClose: 3000});
+                navigate('/meus-agendamentos');
             }
         } catch (error) {
-            if (error.response && error.response.status === 401) {
-                // Token expirado ou inválido
-                navigate('/auth/sign-in');
+            console.error('Erro ao criar agendamento:', error.response?.data);
+            if (error.response?.data?.errors) {
+                // Se houver erros de validação específicos
+                const errorMessages = Object.values(error.response.data.errors).flat();
+                setPaymentError(errorMessages.join('\n'));
             } else {
-                setPaymentError(error.response?.data?.message || 'Erro ao processar o pagamento');
+                setPaymentError(error.response?.data?.message || 'Erro ao processar o agendamento');
             }
         }
     };
@@ -227,9 +249,9 @@ const Agendamento = () => {
                     {selectedDate && selectedTime && !error && (
                         <div className="selected-info">
                             <h3>Horário Selecionado:</h3>
-                            <p>Data: {new Date(selectedDate).toLocaleDateString('pt-BR')}</p>
+                            <p>Data: {formatDate(selectedDate)}</p>
                             <p>Horário: {selectedTime}</p>
-                            <p>Preço: R$ {servicePrice?.toFixed(2)}</p>
+                            <p>Preço: R$ {Number(servicePrice).toFixed(2)}</p>
                             <button className="confirm-button" onClick={goToPayment}>
                                 Ir para Pagamento
                             </button>
@@ -244,12 +266,12 @@ const Agendamento = () => {
                         <p>Serviço: {serviceName}</p>
                         <p>Data: {new Date(selectedDate).toLocaleDateString('pt-BR')}</p>
                         <p>Horário: {selectedTime}</p>
-                        <p>Preço Base: R$ {servicePrice?.toFixed(2)}</p>
-                            {paymentMethod && (
-                                <p className="price">
-                                    Valor Final: R$ {calculateFinalPrice().toFixed(2)}
-                                </p>
-                            )}
+                        <p>Preço Base: R$ {Number(servicePrice).toFixed(2)}</p>
+                        {paymentMethod && (
+                            <p className="price">
+                                Valor Final: R$ {calculateFinalPrice().toFixed(2)}
+                            </p>
+                        )}
                     </div>
 
                     <div className="form-group">

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './agendamento.css';
+import { ToastContainer, toast } from 'react-toastify';
 
 const MeusAgendamentos = () => {
     const [agendamentos, setAgendamentos] = useState([]);
@@ -37,7 +38,7 @@ const MeusAgendamentos = () => {
             // Atualiza o localStorage
             localStorage.setItem('agendamentos', JSON.stringify(agendamentosAtualizados));
             
-            alert('Agendamento excluído com sucesso!');
+            toast.success('Agendamento excluído com sucesso!');
         }
     };
 
@@ -48,7 +49,7 @@ const MeusAgendamentos = () => {
     return (
         <div className="agendamento-container">
             <h1>Meus Agendamentos</h1>
-            
+            <ToastContainer/>
             <div className="agendamentos-list">
                 {agendamentos.length > 0 ? (
                     agendamentos.map((agendamento) => (

@@ -34,7 +34,7 @@ const Home = () => {
         if (selectedService) {
             navigate('/agendamento', {
                 state: {
-                    servicePrice: selectedService.price,
+                    servicePrice: Number(selectedService.price),
                     serviceName: selectedService.name,
                     serviceId: selectedService.id
                 }
