@@ -1,11 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import api from '../../services/api';
 import './agendamento.css';
 
 const Agendamento = () => {
     const location = useLocation();
     const navigate = useNavigate();
-    const servicePrice = location.state?.servicePrice || 0;
+    const { servicePrice, serviceName } = location.state || {};
+
+    // Redireciona se não houver dados do serviço
+    useEffect(() => {
+        if (!servicePrice || !serviceName) {
+            navigate('/home');
+        }
+    }, [servicePrice, serviceName, navigate]);
 
     const [selectedDate, setSelectedDate] = useState('');
     const [selectedTime, setSelectedTime] = useState('');
@@ -17,7 +25,7 @@ const Agendamento = () => {
 
     // Função para calcular o valor final do pagamento
     const calculateFinalPrice = () => {
-        let finalPrice = servicePrice;
+        let finalPrice = servicePrice || 0;
 
         // Aplica taxas ou descontos baseado no método de pagamento
         switch (paymentMethod) {
@@ -119,40 +127,66 @@ const Agendamento = () => {
     const salvarAgendamento = () => {
         const novoAgendamento = {
             id: Date.now(), // Usa o timestamp como ID único
-            servico: location.state?.serviceName || 'Serviço',
+            servico: serviceName || 'Serviço',
             data: selectedDate,
             horario: selectedTime,
-            preco: servicePrice,
+            preco: servicePrice || 0,
             metodoPagamento: paymentMethod === 'credit' ? 'Cartão de Crédito' : 
                            paymentMethod === 'debit' ? 'Cartão de Débito' : 
-                           paymentMethod === 'pix' ? 'PIX' : 'Não definido'
+                           paymentMethod === 'pix' ? 'PIX' : 'Não definido',
+            status: 'Agendado'
         };
 
-        // Recupera agendamentos existentes
-        const agendamentosExistentes = JSON.parse(localStorage.getItem('agendamentos') || '[]');
-        
-        // Adiciona o novo agendamento
-        const agendamentosAtualizados = [...agendamentosExistentes, novoAgendamento];
-        
-        // Salva no localStorage
-        localStorage.setItem('agendamentos', JSON.stringify(agendamentosAtualizados));
+        try {
+            // Recupera agendamentos existentes
+            const agendamentosExistentes = JSON.parse(localStorage.getItem('agendamentos') || '[]');
+            
+            // Adiciona o novo agendamento
+            const agendamentosAtualizados = [...agendamentosExistentes, novoAgendamento];
+            
+            // Salva no localStorage
+            localStorage.setItem('agendamentos', JSON.stringify(agendamentosAtualizados));
+            return true;
+        } catch (error) {
+            console.error('Erro ao salvar agendamento:', error);
+            return false;
+        }
     };
 
     // Função para processar o pagamento
-    const handlePayment = () => {
+    const handlePayment = async () => {
         if (!paymentMethod) {
             setPaymentError('Por favor, selecione um método de pagamento');
             return;
         }
         
-        // Salva o agendamento
-        salvarAgendamento();
-        
-        // Mostra mensagem de sucesso
-        alert('Agendamento realizado com sucesso!');
-        
-        // Redireciona para a página de agendamentos
-        navigate('/meus-agendamentos');
+        try {
+            const response = await api.post('/api/appointments/store', {
+                service: serviceName,
+                date: selectedDate,
+                time: selectedTime,
+                price: servicePrice,
+                payment_method: paymentMethod,
+                status: 'pending'
+            });
+
+            if (response.data) {
+                const salvou = salvarAgendamento();
+                if (salvou) {
+                    alert('Agendamento realizado com sucesso!');
+                    navigate('/meus-agendamentos', { replace: true });
+                } else {
+                    setPaymentError('Erro ao salvar o agendamento localmente');
+                }
+            }
+        } catch (error) {
+            if (error.response && error.response.status === 401) {
+                // Token expirado ou inválido
+                navigate('/auth/sign-in');
+            } else {
+                setPaymentError(error.response?.data?.message || 'Erro ao processar o pagamento');
+            }
+        }
     };
 
     return (
@@ -195,7 +229,7 @@ const Agendamento = () => {
                             <h3>Horário Selecionado:</h3>
                             <p>Data: {new Date(selectedDate).toLocaleDateString('pt-BR')}</p>
                             <p>Horário: {selectedTime}</p>
-                            <p>Preço: R$ {servicePrice.toFixed(2)}</p>
+                            <p>Preço: R$ {servicePrice?.toFixed(2)}</p>
                             <button className="confirm-button" onClick={goToPayment}>
                                 Ir para Pagamento
                             </button>
@@ -207,16 +241,15 @@ const Agendamento = () => {
                     <h2>Pagamento</h2>
                     <div className="selected-info">
                         <h3>Resumo do Agendamento:</h3>
+                        <p>Serviço: {serviceName}</p>
                         <p>Data: {new Date(selectedDate).toLocaleDateString('pt-BR')}</p>
                         <p>Horário: {selectedTime}</p>
-                        <p>Preço Base: R$ {servicePrice.toFixed(2)}</p>
-                        {paymentMethod && (
-                            <p className="price">
-                                Valor Final: R$ {calculateFinalPrice().toFixed(2)}
-                                {paymentMethod === 'credit'}
-                                {paymentMethod === 'pix'}
-                            </p>
-                        )}
+                        <p>Preço Base: R$ {servicePrice?.toFixed(2)}</p>
+                            {paymentMethod && (
+                                <p className="price">
+                                    Valor Final: R$ {calculateFinalPrice().toFixed(2)}
+                                </p>
+                            )}
                     </div>
 
                     <div className="form-group">

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import './index.css';
 import bannerImage from './bannersite.jpg';
+import api from '../../services/api';
 
 const Home = () => {
     const [services, setServices] = useState([]);
@@ -13,14 +14,9 @@ const Home = () => {
     useEffect(() => {
         const fetchServices = async () => {
             try {
-                const mockServices = [
-                    { id: 1, name: 'Corte de cabelo', duration: 30, price: 50 },
-                    { id: 2, name: 'Coloração', duration: 60, price: 120 },
-                    { id: 3, name: 'Manicure', duration: 45, price: 40 },
-                    { id: 4, name: 'Pedicure', duration: 45, price: 45 },
-                    { id: 5, name: 'Maquiagem', duration: 60, price: 80 }
-                ];
-                setServices(mockServices);
+                const response = await api.get('/api/services');
+                
+                setServices(response.data);
                 setLoading(false);
             } catch (error) {
                 console.error('Erro ao carregar serviços:', error);
@@ -39,7 +35,8 @@ const Home = () => {
             navigate('/agendamento', {
                 state: {
                     servicePrice: selectedService.price,
-                    serviceName: selectedService.name
+                    serviceName: selectedService.name,
+                    serviceId: selectedService.id
                 }
             });
         }
@@ -57,17 +54,16 @@ const Home = () => {
         <div className="home-container">
             {/* Navbar */}
             <nav className="navbar">
-    <div className="logo">Salon Agenda</div>
-    <ul className="nav-links">
-        <li><a href="/">Sair</a></li>
-        <li><a href="#services">Serviços</a></li>
-        <li><a href="#" onClick={handleMeusAgendamentos}>Agendamentos</a></li>
-        <li><Link to="/sobre">Sobre Nós</Link></li>
-    </ul>
-</nav>
+                <div className="logo">Salon Agenda</div>
+                <ul className="nav-links">
+                    <li><a href="/">Sair</a></li>
+                    <li><a href="#services">Serviços</a></li>
+                    <li><a href="/meus-agendamentos">Meus Agendamentos</a></li>
+                    <li><Link to="/sobre">Sobre Nós</Link></li>
+                </ul>
+            </nav>
 
-
-              {/* Banner */}
+            {/* Banner */}
             <div className="banner">
                 <img src={bannerImage} alt="Banner do salão" />
             </div>
@@ -76,29 +72,36 @@ const Home = () => {
             <h1>Serviços Disponíveis</h1>
 
             <div className="services-section" id="services">
-                <div className="services-grid">
-                    {services.map((service) => (
-                        <div
-                            key={service.id}
-                            className={`service-card ${selectedService?.id === service.id ? 'selected' : ''}`}
-                            onClick={() => handleServiceSelect(service)}
-                        >
-                            <h3>{service.name}</h3>
-                            <p>Duração: {service.duration} minutos</p>
-                            <p>Preço: R$ {service.price}</p>
-                        </div>
-                    ))}
-                </div>
+                {services.length === 0 ? (
+                    <p className="no-services">Nenhum serviço disponível no momento.</p>
+                ) : (
+                    <div className="services-grid">
+                        {services.map((service) => (
+                            <div
+                                key={service.id}
+                              
+                                onClick={() => handleServiceSelect(service)}
+                            >   className={`service-card ${selectedService?.id === service.id ? 'selected' : ''}`}
+
+                                <h3>{service.name}</h3>
+                                <p>{service.description}</p>
+                                <p>Duração: {service.duration} minutos</p>
+                                <p>Preço: R$ {service.price}</p>
+                            </div>
+                        ))}
+                    </div>
+                )}
             </div>
 
             {selectedService && (
-                <div className="selected-service" id="agendamento">
+                <div className="selected-service">
                     <h2>Serviço Selecionado</h2>
-                    <p>BREVE DESCRIÇÃO DO SERVIÇO</p>
-                    <p>Duração: {selectedService.duration} minutos</p>
-                    <p>Preço: R$ {selectedService.price}</p>
+                    <p><strong>Nome:</strong> {selectedService.name}</p>
+                    <p><strong>Descrição:</strong> {selectedService.description}</p>
+                    <p><strong>Duração:</strong> {selectedService.duration} minutos</p>
+                    <p><strong>Preço:</strong> R$ {selectedService.price}</p>
                     <button className="next-button" onClick={handleNextStep}>
-                        Agendar agora
+                        Agendar Horário
                     </button>
                 </div>
             )}

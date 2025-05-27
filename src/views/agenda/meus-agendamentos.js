@@ -10,7 +10,14 @@ const MeusAgendamentos = () => {
         // Recupera os agendamentos do localStorage
         const agendamentosSalvos = localStorage.getItem('agendamentos');
         if (agendamentosSalvos) {
-            setAgendamentos(JSON.parse(agendamentosSalvos));
+            const agendamentosArray = JSON.parse(agendamentosSalvos);
+            // Ordena os agendamentos por data e horário
+            const agendamentosOrdenados = agendamentosArray.sort((a, b) => {
+                const dataA = new Date(`${a.data}T${a.horario}`);
+                const dataB = new Date(`${b.data}T${b.horario}`);
+                return dataA - dataB;
+            });
+            setAgendamentos(agendamentosOrdenados);
         }
     }, []);
 
@@ -34,6 +41,10 @@ const MeusAgendamentos = () => {
         }
     };
 
+    const formatarData = (data) => {
+        return new Date(data).toLocaleDateString('pt-BR');
+    };
+
     return (
         <div className="agendamento-container">
             <h1>Meus Agendamentos</h1>
@@ -45,10 +56,11 @@ const MeusAgendamentos = () => {
                             <h3>Agendamento #{agendamento.id}</h3>
                             <div className="agendamento-info">
                                 <p><strong>Serviço:</strong> {agendamento.servico}</p>
-                                <p><strong>Data:</strong> {new Date(agendamento.data).toLocaleDateString('pt-BR')}</p>
+                                <p><strong>Data:</strong> {formatarData(agendamento.data)}</p>
                                 <p><strong>Horário:</strong> {agendamento.horario}</p>
                                 <p><strong>Preço:</strong> R$ {agendamento.preco.toFixed(2)}</p>
                                 <p><strong>Método de Pagamento:</strong> {agendamento.metodoPagamento}</p>
+                                <p><strong>Status:</strong> {agendamento.status}</p>
                             </div>
                             <button 
                                 className="delete-button"
@@ -68,9 +80,6 @@ const MeusAgendamentos = () => {
             <button className="home-button" onClick={handleVoltarHome}>
                 Voltar para Home
             </button>
-
-           
-
         </div>
     );
 };
