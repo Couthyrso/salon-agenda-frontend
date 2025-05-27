@@ -24,6 +24,7 @@ const SignIn = () => {
       const { token, user } = response.data;
 
       Cookies.set('token', token, { expires: 7 });
+      Cookies.set('userRole', user.admin, { expires: 7 });
       
       if (user.admin === true) {
         navigate("/homeadm");

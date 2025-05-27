@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './indexadm.css';
+import api from '../../services/api';
 
 const HomeAdm = () => {
     const [services, setServices] = useState([]);
@@ -9,30 +10,26 @@ const HomeAdm = () => {
     const [showForm, setShowForm] = useState(false);
     const [newService, setNewService] = useState({
         name: '',
+        description: '',
         duration: '',
         price: '',
-        description: ''
+        status: true
     });
 
     const navigate = useNavigate();
 
     useEffect(() => {
-        const stored = localStorage.getItem('services');
-        if (stored) {
-            setServices(JSON.parse(stored));
-            setLoading(false);
-        } else {
-            const mockServices = [
-                { id: 1, name: 'Corte de cabelo', duration: 30, price: 50, description: 'Corte masculino ou feminino.' },
-                { id: 2, name: 'Coloração', duration: 60, price: 120, description: 'Coloração completa para todos os tipos de cabelo.' },
-                { id: 3, name: 'Manicure', duration: 45, price: 40, description: 'Manicure com esmaltação.' },
-                { id: 4, name: 'Pedicure', duration: 45, price: 45, description: 'Pedicure com esfoliação.' },
-                { id: 5, name: 'Maquiagem', duration: 60, price: 80, description: 'Maquiagem profissional para eventos.' }
-            ];
-            setServices(mockServices);
-            localStorage.setItem('services', JSON.stringify(mockServices));
-            setLoading(false);
-        }
+        const fetchServices = async () => {
+            try {
+                const response = await api.get('/api/services');
+                setServices(response.data);
+                setLoading(false);
+            } catch (error) {
+                console.error('Erro ao carregar serviços:', error);
+                setLoading(false);
+            }
+        };
+        fetchServices();
     }, []);
 
     const handleServiceSelect = (service) => setSelectedService(service);
@@ -50,36 +47,119 @@ const HomeAdm = () => {
 
     const handleMeusAgendamentos = () => navigate('/meus-agendamentos');
 
-    const handleAddService = () => {
-        const newId = services.length ? Math.max(...services.map(s => s.id)) + 1 : 1;
-        const updatedServices = [
-            ...services,
-            {
-                id: newId,
-                name: newService.name,
+    const handleAddService = async () => {
+        // Validação dos campos
+        if (!newService.name || !newService.description || !newService.duration || !newService.price) {
+            alert('Por favor, preencha todos os campos');
+            return;
+        }
+
+        try {
+            const serviceData = {
+                name: newService.name.trim(),
+                description: newService.description.trim(),
                 duration: Number(newService.duration),
                 price: Number(newService.price),
-                description: newService.description
+                status: newService.status
+            };
+
+            // Validação dos números
+            if (isNaN(serviceData.duration) || serviceData.duration <= 0) {
+                alert('A duração deve ser um número positivo');
+                return;
             }
-        ];
-        setServices(updatedServices);
-        localStorage.setItem('services', JSON.stringify(updatedServices));
-        setNewService({ name: '', duration: '', price: '', description: '' });
-        setShowForm(false);
+
+            if (isNaN(serviceData.price) || serviceData.price <= 0) {
+                alert('O preço deve ser um número positivo');
+                return;
+            }
+
+            const response = await api.post('/api/services/store', serviceData);
+
+            if (response.data) {
+                // Atualiza a lista de serviços com o novo serviço
+                setServices(prevServices => [...prevServices, response.data]);
+                setNewService({ 
+                    name: '', 
+                    description: '', 
+                    duration: '', 
+                    price: '', 
+                    status: true 
+                });
+                setShowForm(false);
+                alert('Serviço criado com sucesso!');
+            }
+        } catch (error) {
+            console.error('Erro ao criar serviço:', error);
+            if (error.response?.data?.errors) {
+                // Se houver erros de validação específicos
+                const errorMessages = Object.values(error.response.data.errors).flat();
+                alert(errorMessages.join('\n'));
+            } else {
+                alert(error.response?.data?.message || 'Erro ao criar serviço. Por favor, tente novamente.');
+            }
+        }
     };
 
-    const handleDeleteService = (id) => {
-        const updatedServices = services.filter(service => service.id !== id);
-        setServices(updatedServices);
-        localStorage.setItem('services', JSON.stringify(updatedServices));
+    const handleDeleteService = async (id) => {
+        try {
+            await api.delete(`/api/services/${id}`);
+            setServices(prevServices => prevServices.filter(service => service.id !== id));
+        } catch (error) {
+            console.error('Erro ao excluir serviço:', error);
+            alert(error.response?.data?.message || 'Erro ao excluir serviço');
+        }
     };
 
-    const handleEditService = (id) => {
+    const handleEditService = async (id) => {
         const service = services.find(s => s.id === id);
         if (service) {
             setNewService(service);
-            handleDeleteService(id);
             setShowForm(true);
+        }
+    };
+
+    const handleUpdateService = async () => {
+        if (!newService.id) {
+            alert('ID do serviço não encontrado');
+            return;
+        }
+
+        try {
+            const serviceData = {
+                name: newService.name.trim(),
+                description: newService.description.trim(),
+                duration: Number(newService.duration),
+                price: Number(newService.price),
+                status: newService.status
+            };
+
+            const response = await api.put(`/api/services/${newService.id}`, serviceData);
+
+            if (response.data) {
+                setServices(prevServices => 
+                    prevServices.map(service => 
+                        service.id === newService.id ? response.data : service
+                    )
+                );
+                setNewService({ 
+                    name: '', 
+                    description: '', 
+                    duration: '', 
+                    price: '', 
+                    status: true 
+                });
+                setShowForm(false);
+                alert('Serviço atualizado com sucesso!');
+            }
+        } catch (error) {
+            console.error('Erro ao atualizar serviço:', error);
+            if (error.response?.data?.errors) {
+                const errorMessages = Object.values(error.response.data.errors).flat();
+                alert(errorMessages.join('\n'));
+            } else {
+                alert(error.response?.data?.message || 'Erro ao atualizar serviço');
+            }
         }
     };
 
@@ -92,56 +172,116 @@ const HomeAdm = () => {
                 <ul className="nav-links">
                     <li><a href="/">Sair</a></li>
                     <li><a href="#services">Serviços</a></li>
-                    <li><a href="consultaadm">Consulta</a></li>
+                    <li><a href="/gerenciador">Consulta</a></li>
                     <li><a href="#contato">Contato</a></li>
                 </ul>
             </nav>
 
             <h1>Serviços Disponíveis</h1>
 
-            {showForm && (
-                <div className="modal-overlay" onClick={() => setShowForm(false)}>
-                    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-                        <button className="close-button" onClick={() => setShowForm(false)}>×</button>
-                        <h2>Novo Serviço</h2>
-                        <input type="text" placeholder="Nome do serviço" value={newService.name} onChange={(e) => setNewService({ ...newService, name: e.target.value })} />
-                        <input type="number" placeholder="Duração (minutos)" value={newService.duration} onChange={(e) => setNewService({ ...newService, duration: e.target.value })} />
-                        <input type="number" placeholder="Preço (R$)" value={newService.price} onChange={(e) => setNewService({ ...newService, price: e.target.value })} />
-                        <input type="text" placeholder="Descrição" value={newService.description} onChange={(e) => setNewService({ ...newService, description: e.target.value })} />
-                        <button className='add-button' onClick={handleAddService}>Adicionar Serviço</button>
-                    </div>
-                </div>
-            )}
-
             <div className="services-section" id="services">
+                <button className="add-button" onClick={() => setShowForm(true)}>
+                    Adicionar Novo Serviço
+                </button>
+
                 <div className="services-grid">
                     {services.map((service) => (
-                        <div key={service.id} className={`service-card ${selectedService?.id === service.id ? 'selected' : ''}`} onClick={() => handleServiceSelect(service)}>
+                        <div
+                            key={service.id}
+                            className={`service-card ${selectedService?.id === service.id ? 'selected' : ''}`}
+                            onClick={() => handleServiceSelect(service)}
+                        >
                             <h3>{service.name}</h3>
+                            <p>{service.description}</p>
                             <p>Duração: {service.duration} minutos</p>
                             <p>Preço: R$ {service.price}</p>
-                            <p>{service.description}</p>
-                            <div className="card-actions">
-                                <button className="edit-btn" onClick={(e) => { e.stopPropagation(); handleEditService(service.id); }}>✎</button>
-                                <button className="delete-btn" onClick={(e) => { e.stopPropagation(); handleDeleteService(service.id); }}>🗑</button>
+                            <p>Status: {service.status ? 'Ativo' : 'Inativo'}</p>
+                            <div className="service-actions">
+                                <button onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleEditService(service.id);
+                                }}>
+                                    Editar
+                                </button>
+                                <button onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleDeleteService(service.id);
+                                }}>
+                                    Excluir
+                                </button>
                             </div>
                         </div>
                     ))}
-
-                    {/* Botão "+" ao lado dos cards */}
-                    <div className="service-card add-card" onClick={() => setShowForm(!showForm)}>
-                        <span className="plus">+</span>
-                    </div>
                 </div>
             </div>
 
-            {selectedService && (
-                <div className="selected-service" id="agendamento">
-                    <h2>Serviço Selecionado</h2>
-                    <p>{selectedService.description}</p>
-                    <p>Duração: {selectedService.duration} minutos</p>
-                    <p>Preço: R$ {selectedService.price}</p>
-                    <button className="next-button" onClick={handleNextStep}>Agendamento</button>
+            {showForm && (
+                <div className="modal">
+                    <div className="modal-content">
+                        <h2>{newService.id ? 'Editar Serviço' : 'Novo Serviço'}</h2>
+                        <div className="form-group">
+                            <label>Nome:</label>
+                            <input
+                                type="text"
+                                value={newService.name}
+                                onChange={(e) => setNewService({...newService, name: e.target.value})}
+                                required
+                            />
+                        </div>
+                        <div className="form-group">
+                            <label>Descrição:</label>
+                            <textarea
+                                value={newService.description}
+                                onChange={(e) => setNewService({...newService, description: e.target.value})}
+                                required
+                            />
+                        </div>
+                        <div className="form-group">
+                            <label>Duração (minutos):</label>
+                            <input
+                                type="number"
+                                value={newService.duration}
+                                onChange={(e) => setNewService({...newService, duration: e.target.value})}
+                                required
+                            />
+                        </div>
+                        <div className="form-group">
+                            <label>Preço:</label>
+                            <input
+                                type="number"
+                                value={newService.price}
+                                onChange={(e) => setNewService({...newService, price: e.target.value})}
+                                required
+                            />
+                        </div>
+                        <div className="form-group">
+                            <label>Status:</label>
+                            <select
+                                value={newService.status}
+                                onChange={(e) => setNewService({...newService, status: e.target.value === 'true'})}
+                            >
+                                <option value="true">Ativo</option>
+                                <option value="false">Inativo</option>
+                            </select>
+                        </div>
+                        <div className="modal-buttons">
+                            <button onClick={newService.id ? handleUpdateService : handleAddService}>
+                                {newService.id ? 'Atualizar Serviço' : 'Adicionar Serviço'}
+                            </button>
+                            <button onClick={() => {
+                                setShowForm(false);
+                                setNewService({
+                                    name: '',
+                                    description: '',
+                                    duration: '',
+                                    price: '',
+                                    status: true
+                                });
+                            }}>
+                                Cancelar
+                            </button>
+                        </div>
+                    </div>
                 </div>
             )}
         </div>

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import './index.css';
 import bannerImage from './bannersite.jpg';
+import api from '../../services/api';
 
 const Home = () => {
     const [services, setServices] = useState([]);
@@ -13,14 +14,10 @@ const Home = () => {
     useEffect(() => {
         const fetchServices = async () => {
             try {
-                const mockServices = [
-                    { id: 1, name: 'Corte de cabelo', duration: 30, price: 50 },
-                    { id: 2, name: 'Coloração', duration: 60, price: 120 },
-                    { id: 3, name: 'Manicure', duration: 45, price: 40 },
-                    { id: 4, name: 'Pedicure', duration: 45, price: 45 },
-                    { id: 5, name: 'Maquiagem', duration: 60, price: 80 }
-                ];
-                setServices(mockServices);
+                const response = await api.get('/api/services');
+                // Filtra apenas os serviços ativos
+                const activeServices = response.data.filter(service => service.status === true);
+                setServices(activeServices);
                 setLoading(false);
             } catch (error) {
                 console.error('Erro ao carregar serviços:', error);
@@ -61,14 +58,14 @@ const Home = () => {
                 <ul className="nav-links">
                     <li><a href="/">Sair</a></li>
                     <li><a href="#services">Serviços</a></li>
-                    <li><a href="#" onClick={handleMeusAgendamentos}>Agendamentos</a></li>
-                    <li><Link to="/sobre">Sobre Nós</Link></li>
+                    <li><a href="/meus-agendamentos">Meus Agendamentos</a></li>
+                    <li><a href="#contato">Contato</a></li>
                 </ul>
             </nav>
 
             {/* Banner */}
             <div className="banner">
-                <img src={bannerImage} alt="Banner do salão" />
+                <img src={bannerImage} alt="Banner" />
             </div>
 
             {/* Conteúdo */}
@@ -83,24 +80,26 @@ const Home = () => {
                             onClick={() => handleServiceSelect(service)}
                         >
                             <h3>{service.name}</h3>
+                            <p>{service.description}</p>
                             <p>Duração: {service.duration} minutos</p>
                             <p>Preço: R$ {service.price}</p>
                         </div>
                     ))}
                 </div>
-            </div>
 
-            {selectedService && (
-                <div className="selected-service" id="agendamento">
-                    <h2>Serviço Selecionado</h2>
-                    <p>BREVE DESCRIÇÃO DO SERVIÇO</p>
-                    <p>Duração: {selectedService.duration} minutos</p>
-                    <p>Preço: R$ {selectedService.price}</p>
-                    <button className="next-button" onClick={handleNextStep}>
-                        Agendar agora
-                    </button>
-                </div>
-            )}
+                {selectedService && (
+                    <div className="selected-service">
+                        <h2>Serviço Selecionado</h2>
+                        <p><strong>Nome:</strong> {selectedService.name}</p>
+                        <p><strong>Descrição:</strong> {selectedService.description}</p>
+                        <p><strong>Duração:</strong> {selectedService.duration} minutos</p>
+                        <p className="price"><strong>Preço:</strong> R$ {selectedService.price}</p>
+                        <button className="next-button" onClick={handleNextStep}>
+                            Agendar Horário
+                        </button>
+                    </div>
+                )}
+            </div>
         </div>
     );
 };
