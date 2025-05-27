@@ -79,9 +79,10 @@ const Home = () => {
                         {services.map((service) => (
                             <div
                                 key={service.id}
-                                className={`service-card ${selectedService?.id === service.id ? 'selected' : ''}`}
+                              
                                 onClick={() => handleServiceSelect(service)}
-                            >
+                            >   className={`service-card ${selectedService?.id === service.id ? 'selected' : ''}`}
+
                                 <h3>{service.name}</h3>
                                 <p>{service.description}</p>
                                 <p>Duração: {service.duration} minutos</p>
