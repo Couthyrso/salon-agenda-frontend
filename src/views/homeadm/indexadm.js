@@ -1,343 +1,202 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import './indexadm.css';
-import api from '../../services/api';
 import { ToastContainer, toast } from 'react-toastify';
+import api from '../../services/api';
+import './indexadm.css';
 import AnimationWarningLottie from '../../components/AnimationWarningDeleteConfim/AnimationWarningLottie';
 
 const HomeAdm = () => {
     const [services, setServices] = useState([]);
-    const [selectedService, setSelectedService] = useState(null);
     const [loading, setLoading] = useState(true);
     const [showForm, setShowForm] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
-    const [serviceIdToDelete, setServiceIdToDelete] = useState(null);
-    const [serviceNameToDelete, setServiceNameToDelete] = useState('');
-    const [newService, setNewService] = useState({
+    const [serviceToEdit, setServiceToEdit] = useState(null);
+    const [serviceToDelete, setServiceToDelete] = useState(null);
+
+    const [formData, setFormData] = useState({
         name: '',
         description: '',
         duration: '',
-        price: ''
+        price: '',
     });
 
-    const handleConfirmDelete = () => {
-        if (serviceIdToDelete) {
-            handleDeleteService(serviceIdToDelete);
-        }
-        setShowDeleteModal(false);
-    };
-
-    const handleOpenDeleteModal = (serviceId, serviceName) => {
-        setServiceIdToDelete(serviceId);
-        setServiceNameToDelete(serviceName);
-        setShowDeleteModal(true);
-    };
-
-    function OpenDeleteModal(props) {
-        // se o modal não estiver visível, não renderiza nada
-        if (!props.show) return null;
-
-        return (
-            <div className="modal-overlay">
-                <div className="modal-content">
-                    <div className="modal-header">
-                        <h2>Confirmar exclusão de o serviço</h2>
-                        <button className="close-button" onClick={props.onHide}>&times;</button>
-                    </div>
-                    <div className="modal-body">
-                        <div className="animation-container">
-                            <AnimationWarningLottie />
-                        </div>
-                        <div className="confirmation-text">
-                            <p>
-                                Tem certeza que deseja excluir "{props.serviceName}" ?
-                            </p>
-                        </div>
-                    </div>
-                    <div className="modal-footer">
-                        <button className="confirm-button" onClick={props.onConfirm}>Sim</button>
-                        <button className="cancel-button" onClick={props.onHide}>Não</button>
-                    </div>
-                </div>
-            </div>
-        );
-    }
-
     useEffect(() => {
-        const fetchServices = async () => {
+        (async () => {
             try {
-                const response = await api.get('/api/services');
-                setServices(response.data);
-                setLoading(false);
-            } catch (error) {
-                console.error('Erro ao carregar serviços:', error);
+                const res = await api.get('/api/services');
+                setServices(res.data);
+            } catch (err) {
+                toast.error('Erro ao carregar serviços.');
+            } finally {
                 setLoading(false);
             }
-        };
-        fetchServices();
+        })();
     }, []);
 
-    const handleServiceSelect = (service) => setSelectedService(service);
+    const resetForm = () => {
+        setFormData({ name: '', description: '', duration: '', price: '' });
+        setServiceToEdit(null);
+        setShowForm(false);
+    };
 
-    const handleAddService = async () => {
+    const handleInputChange = (field, value) => {
+        setFormData(prev => ({ ...prev, [field]: value }));
+    };
 
-        if (!newService.name || !newService.description || !newService.duration || !newService.price) {
-            alert('Por favor, preencha todos os campos');
+    const handleAddOrUpdateService = async () => {
+        const { name, description, duration, price } = formData;
+        if (!name || !description || !duration || !price) {
+            toast.warn('Preencha todos os campos.');
             return;
         }
 
-        try {
-            const serviceData = {
-                name: newService.name.trim(),
-                description: newService.description.trim(),
-                duration: Number(newService.duration),
-                price: Number(newService.price)
-            };
-
-            if (isNaN(serviceData.duration) || serviceData.duration <= 0) {
-                alert('A duração deve ser um número positivo');
-                return;
-            }
-
-            if (isNaN(serviceData.price) || serviceData.price <= 0) {
-                alert('O preço deve ser um número positivo');
-                return;
-            }
-
-            const response = await api.post('/api/services/store', serviceData);
-
-            if (response.data) {
-                setServices(prevServices => [...prevServices, response.data]);
-                setNewService({
-                    name: '',
-                    description: '',
-                    duration: '',
-                    price: ''
-                });
-                setShowForm(false);
-                toast.success('Serviço criado com sucesso!', { autoClose: 3000 });
-            }
-        } catch (error) {
-            console.error('Erro ao criar serviço:', error);
-            if (error.response?.data?.errors) {
-                const errorMessages = Object.values(error.response.data.errors).flat();
-                toast.error(errorMessages.join('\n'), { autoClose: 3000 });
-            } else {
-                toast.error(error.response?.data?.message || 'Erro ao criar serviço. Por favor, tente novamente.', { autoClose: 3000 });
-            }
-        }
-    };
-
-    const handleDeleteService = async (id) => {
-        try {
-            await api.delete(`/api/services/${id}`);
-            setServices(prevServices => prevServices.filter(service => service.id !== id));
-            toast.success('Serviço excluído com sucesso!', { autoClose: 3000 });
-        } catch (error) {
-            console.error('Erro ao excluir serviço:', error);
-            toast.error(error.response?.data?.message || 'Erro ao excluir serviço', { autoClose: 3000 });
-        }
-    };
-
-    const handleEditService = async (id, e) => {
-        if (e) {
-            e.stopPropagation();
-        }
-        console.log('Editando serviço:', id);
-        const service = services.find(s => s.id === id);
-        if (service) {
-            console.log('Serviço encontrado:', service);
-            setNewService(service);
-            setShowForm(true);
-        }
-    };
-
-    const handleAddNewService = (e) => {
-        if (e) {
-            e.stopPropagation();
-        }
-        console.log('Abrindo formulário para novo serviço');
-        setNewService({
-            name: '',
-            description: '',
-            duration: '',
-            price: ''
-        });
-        setShowForm(true);
-    };
-
-    const handleUpdateService = async () => {
-        if (!newService.id) {
-            alert('ID do serviço não encontrado');
-            return;
-        }
+        const data = {
+            name: name.trim(),
+            description: description.trim(),
+            duration: Number(duration),
+            price: Number(price),
+        };
 
         try {
-            const serviceData = {
-                name: newService.name.trim(),
-                description: newService.description.trim(),
-                duration: Number(newService.duration),
-                price: Number(newService.price)
-            };
-
-            const response = await api.put(`/api/services/${newService.id}`, serviceData);
-
-            if (response.data) {
-                setServices(prevServices =>
-                    prevServices.map(service =>
-                        service.id === newService.id ? response.data : service
-                    )
+            if (serviceToEdit) {
+                const res = await api.put(`/api/services/${serviceToEdit.id}`, data);
+                setServices(prev =>
+                    prev.map(s => (s.id === serviceToEdit.id ? res.data : s))
                 );
-                setNewService({
-                    name: '',
-                    description: '',
-                    duration: '',
-                    price: '',
-                });
-                setShowForm(false);
-                toast.success('Serviço atualizado com sucesso!', { autoClose: 3000 });
-            }
-        } catch (error) {
-            console.error('Erro ao atualizar serviço:', error);
-            if (error.response?.data?.errors) {
-                const errorMessages = Object.values(error.response.data.errors).flat();
-                toast.error(errorMessages.join('\n'), { autoClose: 3000 });
+                toast.success('Serviço atualizado com sucesso!');
             } else {
-                toast.error(error.response?.data?.message || 'Erro ao atualizar serviço', { autoClose: 3000 });
+                const res = await api.post('/api/services/store', data);
+                setServices(prev => [...prev, res.data]);
+                toast.success('Serviço criado com sucesso!');
             }
+            resetForm();
+        } catch (err) {
+            toast.error('Erro ao salvar serviço.');
         }
     };
 
-    if (loading) return <div className="loading">Carregando serviços...</div>;
+    const handleDeleteService = async () => {
+        if (!serviceToDelete) return;
+        try {
+            await api.delete(`/api/services/${serviceToDelete.id}`);
+            setServices(prev => prev.filter(s => s.id !== serviceToDelete.id));
+            toast.success('Serviço excluído com sucesso!');
+        } catch (err) {
+            toast.error('Erro ao excluir serviço.');
+        } finally {
+            setShowDeleteModal(false);
+            setServiceToDelete(null);
+        }
+    };
+
+    if (loading) return <div className="loading">Carregando...</div>;
 
     return (
         <div className="body homeadm-container">
-            <div className="homeadm-container">
-                <nav className="navbar">
-                    <div className="logo">Salon Agenda</div>
-                    <ul className="nav-links">
-                        <li><a href="/">Sair</a></li>
-                        <li><a href="#services">Serviços</a></li>
-                        <li><a href="/gerenciador">Consulta</a></li>
-                        <li><a href="#contato">Contato</a></li>
-                    </ul>
-                </nav>
-                <ToastContainer />
-                <OpenDeleteModal
-                    show={showDeleteModal}
-                    onHide={() => setShowDeleteModal(false)}
-                    onConfirm={handleConfirmDelete}
-                    serviceName={serviceNameToDelete}
-                />
-                <h1>Serviços Disponíveis</h1>
+            <nav className="navbar">
+                <div className="logo">Salon Agenda</div>
+                <ul className="nav-links">
+                    <li><a href="/">Sair</a></li>
+                    <li><a href="#services">Serviços</a></li>
+                    <li><a href="/gerenciador">Consulta</a></li>
+                    <li><a href="#contato">Contato</a></li>
+                </ul>
+            </nav>
 
-                <div className="services-section" id="services">
-                    <button
-                        className="add-button"
-                        onClick={handleAddNewService}
-                    >
-                        Adicionar Novo Serviço
-                    </button>
+            <ToastContainer />
+            <h1>Serviços Disponíveis</h1>
 
-                    <div className="services-grid">
-                        {services.map((service, index) => (
-                            <div
-                                key={index}
-                                className={`service-card ${selectedService?.id === service.id ? 'selected' : ''}`}
-                                onClick={() => handleServiceSelect(service)}
+            <button className="add-button" onClick={() => {
+                resetForm();
+                setShowForm(true);
+            }}>
+               <div class="add-card">
+            <i class="fas fa-plus"></i>
+                <span>Adicionar Serviço</span>
+         </div>
+
+            </button>
+
+            <div className="services-grid">
+                {services.map(service => (
+                    <div className="service-card" key={service.id}>
+                        <h3>{service.name}</h3>
+                        <p>{service.description}</p>
+                        <p>Duração: {service.duration} min</p>
+                        <p>Preço: R$ {service.price}</p>
+                        <div className="service-actions">
+                            <button
+                                className="edit-button"
+                                onClick={() => {
+                                    setFormData(service);
+                                    setServiceToEdit(service);
+                                    setShowForm(true);
+                                }}
                             >
-                                <h3 placeholder="service-name">{service.name}</h3>
-                                <p>{service.description}</p>
-                                <p>Duração: {service.duration} minutos</p>
-                                <p>Preço: R$ {service.price}</p>
-                                <div className="service-actions">
-                                    <button
-                                        className="edit-button w-100"
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            handleEditService(service.id, e);
-                                        }}
-                                    >
-                                        Editar
-                                    </button>
-                                    <button
-                                        className="delete-button w-100"
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            handleOpenDeleteModal(service.id, service.name);
-                                        }}
-                                    >
-                                        Excluir
-                                    </button>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-
-                {showForm && (
-                    <div className="modal-overlay">
-                        <div className="modal-content">
-                            <h2>{newService.id ? 'Editar Serviço' : 'Novo Serviço'}</h2>
-                            <div className="form-group">
-                                <label>Nome:</label>
-                                <input
-                                    type="text"
-                                    value={newService.name}
-                                    onChange={(e) => setNewService({ ...newService, name: e.target.value })}
-                                    required
-                                    placeholder='Nome do serviço'
-                                />
-                            </div>
-                            <div className="form-group">
-                                <label>Descrição:</label>
-                                <textarea
-                                    value={newService.description}
-                                    onChange={(e) => setNewService({ ...newService, description: e.target.value })}
-                                    required
-                                    placeholder='Descrição do serviço'
-                                />
-                            </div>
-                            <div className="form-group">
-                                <label>Duração (minutos):</label>
-                                <input
-                                    type="number"
-                                    value={newService.duration}
-                                    onChange={(e) => setNewService({ ...newService, duration: e.target.value })}
-                                    required
-                                    placeholder='Duração do serviço'
-                                />
-                            </div>
-                            <div className="form-group">
-                                <label>Preço:</label>
-                                <input
-                                    type="number"
-                                    value={newService.price}
-                                    onChange={(e) => setNewService({ ...newService, price: e.target.value })}
-                                    required
-                                    placeholder='Preço do serviço'
-                                />
-                            </div>
-                            <div className="modal-buttons">
-                                <button onClick={newService.id ? handleUpdateService : handleAddService}>
-                                    {newService.id ? 'Atualizar Serviço' : 'Adicionar Serviço'}
-                                </button>
-                                <button onClick={() => {
-                                    setShowForm(false);
-                                    setNewService({
-                                        name: '',
-                                        description: '',
-                                        duration: '',
-                                        price: ''
-                                    });
-                                }}>
-                                    Cancelar
-                                </button>
-                            </div>
+                                Editar
+                            </button>
+                            <button
+                                className="delete-button"
+                                onClick={() => {
+                                    setServiceToDelete(service);
+                                    setShowDeleteModal(true);
+                                }}
+                            >
+                                Excluir
+                            </button>
                         </div>
                     </div>
-                )}
+                ))}
             </div>
+
+            {showForm && (
+                <div className="modal-overlay">
+                    <div className="modal-content">
+                        <h2>{serviceToEdit ? 'Editar Serviço' : 'Novo Serviço'}</h2>
+
+                        <input type="text" placeholder="Nome"
+                            value={formData.name}
+                            onChange={e => handleInputChange('name', e.target.value)} />
+
+                        <textarea placeholder="Descrição"
+                            value={formData.description}
+                            onChange={e => handleInputChange('description', e.target.value)} />
+
+                        <input type="number" placeholder="Duração"
+                            value={formData.duration}
+                            onChange={e => handleInputChange('duration', e.target.value)} />
+
+                        <input type="number" placeholder="Preço"
+                            value={formData.price}
+                            onChange={e => handleInputChange('price', e.target.value)} />
+
+                        <div className="modal-buttons">
+                            <button onClick={handleAddOrUpdateService}>
+                                {serviceToEdit ? 'Atualizar' : 'Adicionar'}
+                            </button>
+                            <button onClick={resetForm}>Cancelar</button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {showDeleteModal && (
+                <div className="modal-overlay">
+                    <div className="modal-content">
+                        <div className="modal-header">
+                            <h2>Confirmar Exclusão</h2>
+                            <button className="close-button" onClick={() => setShowDeleteModal(false)}>&times;</button>
+                        </div>
+                        <div className="modal-body">
+                            <AnimationWarningLottie />
+                            <p>Deseja excluir o serviço "{serviceToDelete?.name}"?</p>
+                        </div>
+                        <div className="modal-footer">
+                            <button className="confirm-button" onClick={handleDeleteService}>Sim</button>
+                            <button className="cancel-button" onClick={() => setShowDeleteModal(false)}>Não</button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

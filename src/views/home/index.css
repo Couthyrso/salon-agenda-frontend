@@ -98,7 +98,7 @@ h1 {
 .service-card {
     margin-top: 80px;
   background-color: #f6f1ed;
-  color: #2c2a2e;
+  color: #edebf0;
   border-radius: 12px;
   padding: 20px;
   width: 240px;
@@ -122,21 +122,21 @@ h1 {
 
 /* Serviço selecionado */
 .selected-service {
-  background-color: #f6f1ed;
+  background-color: #e9dcd1;
   color: #2c2a2e;
   margin: 40px auto;
   padding: 20px;
   border-radius: 12px;
   max-width: 500px;
   text-align: center;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 4px 12px rgb(23, 20, 24);
 }
 
 /* Botão */
 .next-button {
   margin-top: 16px;
-  background-color: #eac1b9;
-  color: #2c2a2e;
+  background-color: #ee907d;
+  color: #180e18;
   border: none;
   padding: 10px 24px;
   font-size: 16px;

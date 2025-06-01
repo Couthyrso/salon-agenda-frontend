@@ -1,47 +1,39 @@
-:root {
-  --color-primary: #f0e3d6;
-  --color-secondary: #4c443b;
-  --color-light: #f0ebf5;
-  --color-dark: #353337
-  --color-muted: #c8bfb6;
-  --color-danger: #e74c3c;
-  --color-success: #27ae60;
-  --shadow-soft: 0 6px 24px rgba(0, 0, 0, 0.12);
-  --radius: 14px;
-  --transition: all 0.3s ease;
-  font-family: "Segoe UI", "Poppins", sans-serif;
+/* Reset básico */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-/* Página base */
-body, .body, .homeadm-container {
-  margin: 0;
-  background-color: var(--color-dark);
-  color: var(--color-light);
-  font-family: inherit;
-  min-height: 100vh;
+body {
+  background-color: #121212;
+  color: #f5f5f5;
+  font-family: "Poppins", sans-serif;
   line-height: 1.6;
+  min-height: 100vh;
 }
 
 /* Navbar */
 .navbar2 {
-  background: linear-gradient(90deg, var(--color-primary), #a98a6a);
-  color: white;
+  background-color: #1e1e1e;
   padding: 1rem 2rem;
-  box-shadow: var(--shadow-soft);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  border-bottom: 1px solid #272727;
 }
 
 .nav-links {
+  list-style: none;
   display: flex;
   gap: 2rem;
-  list-style: none;
-  padding: 0;
-  margin: 0;
 }
 
 .nav-links a {
-  color: white;
+  color: #f5f5f5;
   text-decoration: none;
-  font-weight: 600;
+  font-weight: 550;
   position: relative;
   transition: color 0.3s ease;
 }
@@ -58,22 +50,21 @@ body, .body, .homeadm-container {
 }
 
 .nav-links a:hover {
-  color: #eee;
+  color: #d4b08a;
 }
 
 .nav-links a:hover::after {
   width: 100%;
 }
 
-/* Cartão de serviço */
+/* Cards de Serviço */
 .service-card {
-  background: var(--color-light);
-  border-radius: var(--radius);
-  padding: 24px;
-  box-shadow: var(--shadow-soft);
-  transition: var(--transition);
+  background-color: #1e1e1e;
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 8px 24px rgba(248, 45, 140, 0.4);
+  transition: transform 0.3s ease;
   position: relative;
-  color: var(--color-dark);
 }
 
 .service-card:hover {
@@ -82,50 +73,62 @@ body, .body, .homeadm-container {
 
 .service-card.inactive {
   opacity: 0.5;
-  background-color: #eee;
 }
 
 .service-card.inactive::after {
-  content: 'Inativo';
+  content: "Inativo";
   position: absolute;
   top: 12px;
   right: 12px;
-  background: var(--color-secondary);
+  background-color: #e74c3c;
   color: white;
-  padding: 6px 12px;
+  padding: 4px 10px;
   border-radius: 8px;
-  font-size: 12px;
-  letter-spacing: 0.5px;
+  font-size: 0.75rem;
 }
 
-/* Botão "adicionar" */
+/* Card Adicionar Serviço */
 .add-card {
-  margin-top: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: var(--color-light);
-  border: 2px dashed var(--color-muted);
-  border-radius: var(--radius);
-  width: 120px;
-  height: 120px;
-  font-size: 40px;
-  color: var(--color-secondary);
+  gap: 12px;
+  background-color: #1e1e1e;
+  border: 2px dashed #555;
+  border-radius: 16px;
+  padding: 16px 24px;
   cursor: pointer;
-  box-shadow: var(--shadow-soft);
-  transition: var(--transition);
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  width: 100%;
+  max-width: 320px;
 }
 
 .add-card:hover {
-  background-color: #f2eeeb;
-  transform: scale(1.05);
+  background-color: #272727;
+  border-color: #359e54;
+  transform: translateY(-4px) scale(1.02);
 }
 
-/* Botões de ação */
+.add-card i {
+  font-size: 24px;
+  background-color: #359e54;
+  color: #121212;
+  border-radius: 50%;
+  padding: 8px;
+}
+
+.add-card span {
+  color: #e0dede;
+  font-size: 1rem;
+  font-weight: 550;
+}
+
+/* Ações nos cards */
 .service-actions {
   display: flex;
   gap: 12px;
-  margin-top: 16px;
+  margin-top: 1rem;
 }
 
 button,
@@ -134,108 +137,69 @@ button,
 .add-button {
   padding: 10px 18px;
   border: none;
-  border-radius: var(--radius);
-  font-size: 15px;
+  border-radius: 16px;
+  font-size: 0.95rem;
   font-weight: 500;
   cursor: pointer;
-  transition: var(--transition);
-  box-shadow: var(--shadow-soft);
+  transition: 0.3s ease;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
 }
 
-.edit-button,
-.service-actions button:nth-child(1) {
-  background-color: var(--color-secondary);
+.edit-button {
+  background-color: #d4b08a;
+  color: #121212;
+}
+
+.delete-button {
+  background-color: #e74c3c;
   color: white;
 }
 
-.delete-button,
-.service-actions button:nth-child(3) {
-  background-color: #b7322f;
-  color: white;
-}
-
-.service-actions button:nth-child(2) {
-  background-color: var(--color-danger);
-  color: white;
-  margin-left: auto;
+.add-button {
+  background-color: transparent;
+  color: transparent;
 }
 
 button:hover,
 .edit-button:hover,
-.delete-button:hover {
-  transform: translateY(-2px);
-  opacity: 0.9;
-}
-
-.add-button {
-  width: 30%;
-  background-color: var(--color-primary);
-  color: rgb(0, 0, 0);
-   font-weight: 560;
-}
-
+.delete-button:hover,
 .add-button:hover {
-  background-color: #eba899;
+  opacity: 0.9;
+  transform: translateY(-2px);
 }
 
 /* Modal */
+/* Modal overlay - Fundo escuro desfocado */
 .modal-overlay {
   position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background-color: rgba(0, 0, 0, 0.65);
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(6px);
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
   z-index: 1000;
-  backdrop-filter: blur(4px);
 }
 
+/* Container do modal */
 .modal-content {
-  background-color: #2c2a2e;
-  color: #2c2a2e;
+  background-color: #1e1e1e;
+  border-radius: 24px;
   padding: 2rem;
-  border-radius: (--radius);
-  width: 100%;
-  max-width: 800px;
-  border-radius: 40px;
-  box-shadow: var(--shadow-soft);
+  max-width: 600px;
+  width: 90%;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6);
   position: relative;
+  border: 1px solid #2a2a2a;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-/* Formulários */
-.form-group {
-  margin-bottom: 1.5rem;
+.modal-content:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.8);
 }
 
-.form-group label {
-  display: block;
-  margin-bottom: 0.5rem;
-  font-weight: 600;
-  color: var(--color-dark);
-}
-
-.form-group input,
-.form-group textarea,
-.form-group select {
-  width: 100%;
-  padding: 0.8rem 1rem;
-  border: 1px solid #ccc;
-  border-radius: var(--radius);
-  font-size: 1rem;
-  background-color: white;
-  color: var(--color-dark);
-  transition: var(--transition);
-}
-
-.form-group input:focus,
-.form-group textarea:focus,
-.form-group select:focus {
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(194, 160, 121, 0.25);
-  outline: none;
-}
-
-/* Modal header/footer */
+/* Header do modal */
 .modal-header {
   display: flex;
   justify-content: space-between;
@@ -244,43 +208,179 @@ button:hover,
 }
 
 .modal-header h2 {
-  margin: 0;
   font-size: 1.6rem;
-  color: var(--color-dark);
+  color: #f5f5f5;
 }
 
+/* Footer do modal */
 .modal-footer {
   display: flex;
   justify-content: flex-end;
   gap: 1rem;
+  margin-top: 1rem;
+}
+
+/* =========================
+   Inputs Estilizados
+========================= */
+.modal-content label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: #e0dede;
+  font-size: 0.95rem;
+}
+
+.modal-content input,
+.modal-content textarea,
+.modal-content select {
+  width: 100%;
+  padding: 0.9rem 1.1rem;
+  background-color: #121212;
+  border: 1px solid #333;
+  border-radius: 16px;
+  color: #f5f5f5;
+  font-size: 0.95rem;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+}
+
+.modal-content input::placeholder,
+.modal-content textarea::placeholder {
+  color: #888;
+}
+
+.modal-content input:focus,
+.modal-content textarea:focus,
+.modal-content select:focus {
+  border-color: #d4b08a;
+  background-color: #181818;
+  box-shadow: 0 0 0 3px rgba(212, 176, 138, 0.3);
+  outline: none;
+}
+
+/* Textarea ajustável */
+.modal-content textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+/* =========================
+   Botões no Modal
+========================= */
+.modal-footer button {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+}
+
+.modal-footer .confirm-button {
+  background-color: #d4b08a;
+  color: #121212;
+}
+
+.modal-footer .cancel-button {
+  background-color: #555;
+  color: rgb(228, 0, 0);
+}
+
+.modal-footer button:hover {
+  transform: translateY(-2px);
+  opacity: 0.9;
 }
 
 .confirm-button {
-  background-color: var(--color-danger);
+  background-color: #359e54;
   color: white;
 }
 
 .cancel-button {
-  background-color: #999;
+  background-color: #555;
   color: white;
 }
 
 .confirm-button:hover,
 .cancel-button:hover {
-  opacity: 0.9;
   transform: translateY(-2px);
+  opacity: 0.9;
 }
 
-/* Ícones de fechar */
+/* Botão fechar */
 .btn-close {
-  filter: invert(1) grayscale(100%) brightness(200%);
   background: none;
   border: none;
+  color: #f5f5f5;
   font-size: 1.5rem;
   cursor: pointer;
-  transition: transform 0.2s ease;
+  transition: transform 0.3s ease;
 }
 
 .btn-close:hover {
   transform: rotate(90deg);
+}
+
+/* Formulário - Inputs Modernos */
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 550;
+  color: #dcdcdc;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+  width: 100%;
+  padding: 0.9rem 1.2rem;
+  border: 1px solid #2a2a2a;
+  border-radius: 14px;
+  background-color: #181818;
+  color: #f5f5f5;
+  font-size: 1rem;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+  color: #888;
+  opacity: 0.7;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+  border-color: #359e54;
+  box-shadow: 0 0 0 3px rgba(53, 158, 84, 0.3);
+  outline: none;
+}
+
+.form-group textarea {
+  resize: none;
+  min-height: 120px;
+}
+
+/* Botões do formulário */
+.modal-footer .confirm-button {
+  background-color: #359e54;
+  color: white;
+}
+
+.modal-footer .cancel-button {
+  background-color: #555;
+  color: white;
+}
+
+.modal-footer .confirm-button:hover {
+  background-color: #2c8745;
+}
+
+.modal-footer .cancel-button:hover {
+  background-color: #444;
 }
