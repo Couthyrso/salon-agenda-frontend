@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import './indexadm.css';
 import api from '../../services/api';
 import { ToastContainer, toast } from 'react-toastify';
-import { Container, Button, Modal } from 'react-bootstrap';
 import AnimationWarningLottie from '../../components/AnimationWarningDeleteConfim/AnimationWarningLottie';
 
 const HomeAdm = () => {
@@ -35,30 +34,32 @@ const HomeAdm = () => {
     };
 
     function OpenDeleteModal(props) {
+        // se o modal não estiver visível, não renderiza nada
+        if (!props.show) return null;
+
         return (
-            <Modal
-                show={props.show}
-                onHide={props.onHide}
-                aria-labelledby='contained-modal-title-vcenter'
-                centered>
-                <Modal.Header closeButton>
-                    <Modal.Title>Confirmar exclusão de o serviço</Modal.Title>
-                </Modal.Header>
-                <Modal.Body id='modalBody'>
-                    <div className="d-flex justify-content-center">
-                        <AnimationWarningLottie />
+            <div className="modal-overlay">
+                <div className="modal-content">
+                    <div className="modal-header">
+                        <h2>Confirmar exclusão de o serviço</h2>
+                        <button className="close-button" onClick={props.onHide}>&times;</button>
                     </div>
-                    <div className="d-flex justify-content-center">
-                        <p>
-                            Tem certeza que deseja excluir "{props.serviceName}" ?
-                        </p>
+                    <div className="modal-body">
+                        <div className="animation-container">
+                            <AnimationWarningLottie />
+                        </div>
+                        <div className="confirmation-text">
+                            <p>
+                                Tem certeza que deseja excluir "{props.serviceName}" ?
+                            </p>
+                        </div>
                     </div>
-                </Modal.Body>
-                <Modal.Footer id='modalFooter'>
-                    <Button id='yesButton' onClick={props.onConfirm}>Sim</Button>
-                    <Button id='noButton' onClick={props.onHide} >Não</Button>
-                </Modal.Footer>
-            </Modal>
+                    <div className="modal-footer">
+                        <button className="confirm-button" onClick={props.onConfirm}>Sim</button>
+                        <button className="cancel-button" onClick={props.onHide}>Não</button>
+                    </div>
+                </div>
+            </div>
         );
     }
 
@@ -210,7 +211,7 @@ const HomeAdm = () => {
     if (loading) return <div className="loading">Carregando serviços...</div>;
 
     return (
-        <Container fluid className="body homeadm-container">
+        <div className="body homeadm-container">
             <div className="homeadm-container">
                 <nav className="navbar">
                     <div className="logo">Salon Agenda</div>
@@ -337,7 +338,7 @@ const HomeAdm = () => {
                     </div>
                 )}
             </div>
-        </Container>
+        </div>
     );
 };
 

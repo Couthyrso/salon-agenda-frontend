@@ -57,8 +57,8 @@
 }
 
 .modal-content {
-    background-color: #353337 !important;
-    color: white !important;
+    background-color: #353337;
+    color: white;
     padding: 2rem;
     border-radius: 8px;
     width: 90%;
@@ -121,19 +121,13 @@
 }
 
 .close-button {
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
     background: none;
     border: none;
+    color: rgb(31, 190, 137);
     font-size: 1.5rem;
     cursor: pointer;
-    color: #666;
-    transition: color 0.3s ease;
-}
-
-.close-button:hover {
-    color: #333;
+    padding: 0.5rem;
+    line-height: 1;
 }
 
 .service-actions {
@@ -153,14 +147,16 @@
 
 .service-actions button:nth-child(1) {
     /* Editar */
-    background-color: #4CAF50;
+    background-color: #5e4caf;
     color: white;
 }
 
 .service-actions button:nth-child(2) {
     /* Ativar/Desativar */
-    background-color: #2196F3;
+    background-color: #f32121;
     color: white;
+    margin-left: 90px;
+    padding: 10px;
 }
 
 .service-actions button:nth-child(3) {
@@ -203,44 +199,103 @@
 
 .body {
     margin: 0;
-    background-color: #353337 !important;
-    color: white !important;
-    min-height: 100vh !important;
+    background-color: #353337;
+    color: white;
+    min-height: 100vh;
 }
 
 .homeadm-container {
-    background-color: #353337 !important;
-    color: white !important;
-    min-height: 100vh !important;
+    background-color: #353337;
+    color: white;
+    min-height: 100vh;
 }
 
 .navbar {
-    background-color: #353337 !important;
-    color: white !important;
+    background-color: #d18676;
+    color: #353337;
+    padding: 1rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.nav-links {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
 }
 
 .nav-links a {
-    color: white !important;
+    color: white;
+    text-decoration: none;
+    font-weight: 500;
+    transition: opacity 0.3s ease;
 }
 
 .nav-links a:hover {
-    color: #d18676 !important;
+    opacity: 0.8;
 }
 
 .modal-header {
-    background-color: #353337 !important;
-    color: white !important;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.modal-header h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: white;
+}
+
+.modal-body {
+    margin-bottom: 1.5rem;
+}
+
+.animation-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1rem;
+}
+
+.confirmation-text {
+    text-align: center;
+    font-size: 1.1rem;
 }
 
 .modal-footer {
-    background-color: #353337 !important;
-    color: white !important;
-    border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
 }
 
-.modal-title {
-    color: white !important;
+.confirm-button,
+.cancel-button {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.confirm-button {
+    background-color: #dc3545;
+    color: white;
+}
+
+.cancel-button {
+    background-color: #6c757d;
+    color: white;
+}
+
+.confirm-button:hover {
+    background-color: #c82333;
+}
+
+.cancel-button:hover {
+    background-color: #5a6268;
 }
 
 .btn-close {
@@ -272,7 +327,7 @@
 }
 
 .edit-button {
-    background-color: #c17565 !important;
+    background-color: #c17565;
     color: white;
     height: 37px;
     position: relative;
@@ -280,7 +335,7 @@
 }
 
 .delete-button {
-    background-color: #f44336 !important;
+    background-color: #f44336;
     color: white;
 }
 
@@ -312,7 +367,7 @@
 }
 
 .modal-buttons button:last-child {
-    background-color: #f44336 !;
+    background-color: #f44336;
     color: white;
 }
 

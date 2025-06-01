@@ -53,7 +53,8 @@ const Home = () => {
     return (
         <div className="home-container">
             {/* Navbar */}
-            <nav className="navbar">
+            <nav className="navbar" 
+             style={{ backgroundColor: '#353337', color: 'white' }}>
                 <div className="logo">Salon Agenda</div>
                 <ul className="nav-links">
                     <li><a href="/">Sair</a></li>
@@ -68,8 +69,8 @@ const Home = () => {
                 <img src={bannerImage} alt="Banner do salão" />
             </div>
 
-            {/* Conteúdo */}
-            <h1>Serviços Disponíveis</h1>
+            {/* EDITADO!!!!!!!!!!!!! */}
+            <h1 style={{ color: 'white' }}>Serviços Disponíveis</h1>
 
             <div className="services-section" id="services">
                 {services.length === 0 ? (
@@ -79,9 +80,10 @@ const Home = () => {
                         {services.map((service) => (
                             <div
                                 key={service.id}
-                              
+                                className={`service-card ${selectedService?.id === service.id ? 'selected' : ''}`}
                                 onClick={() => handleServiceSelect(service)}
-                            >   className={`service-card ${selectedService?.id === service.id ? 'selected' : ''}`}
+                            >
+
 
                                 <h3>{service.name}</h3>
                                 <p>{service.description}</p>
