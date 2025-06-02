@@ -20,26 +20,49 @@ const HomeAdm = () => {
     });
 
     useEffect(() => {
-        (async () => {
-            try {
-                const res = await api.get('/api/services');
-                setServices(res.data);
-            } catch (err) {
-                toast.error('Erro ao carregar serviços.');
-            } finally {
-                setLoading(false);
-            }
-        })();
+        loadServices();
     }, []);
 
+    const loadServices = async () => {
+        try {
+            const res = await api.get('/api/services');
+            console.log('Serviços carregados:', res.data);
+            if (res.data && res.data.length > 0) {
+                setServices(res.data);
+            }
+        } catch (err) {
+            console.error('Erro ao carregar serviços:', err);
+            toast.error('Erro ao carregar serviços.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
     const resetForm = () => {
-        setFormData({ name: '', description: '', duration: '', price: '' });
+        setFormData({
+            name: '',
+            description: '',
+            duration: '',
+            price: '',
+        });
         setServiceToEdit(null);
         setShowForm(false);
     };
 
     const handleInputChange = (field, value) => {
         setFormData(prev => ({ ...prev, [field]: value }));
+    };
+
+    const handleEditService = (service) => {
+        console.log('Iniciando edição do serviço:', service); // Debug
+        setFormData({
+            name: service.name || '',
+            description: service.description || '',
+            duration: service.duration || '',
+            price: service.price || ''
+        });
+        setServiceToEdit(service);
+        setShowForm(true);
     };
 
     const handleAddOrUpdateService = async () => {
@@ -58,10 +81,34 @@ const HomeAdm = () => {
 
         try {
             if (serviceToEdit) {
-                const res = await api.put(`/api/services/${serviceToEdit.id}`, data);
-                setServices(prev =>
-                    prev.map(s => (s.id === serviceToEdit.id ? res.data : s))
+                const serviceId = serviceToEdit.id;
+                console.log('Editando serviço:', serviceId, data);
+
+                // Faz a requisição PUT
+                await api.post(`/api/services/${serviceId}`, data);
+                
+                // Atualiza o serviço na lista com os dados enviados
+                setServices(prev => 
+                    prev.map(s => 
+                        s.id === serviceId 
+                            ? { ...s, ...data }
+                            : s
+                    )
                 );
+
+                // Força um recarregamento dos serviços após a edição
+                setTimeout(async () => {
+                    try {
+                        const updatedServices = await api.get('/api/services');
+                        console.log('Serviços atualizados:', updatedServices.data);
+                        if (updatedServices.data && updatedServices.data.length > 0) {
+                            setServices(updatedServices.data);
+                        }
+                    } catch (error) {
+                        console.error('Erro ao recarregar serviços:', error);
+                    }
+                }, 1000);
+                
                 toast.success('Serviço atualizado com sucesso!');
             } else {
                 const res = await api.post('/api/services/store', data);
@@ -70,7 +117,8 @@ const HomeAdm = () => {
             }
             resetForm();
         } catch (err) {
-            toast.error('Erro ao salvar serviço.');
+            console.error('Erro ao salvar serviço:', err);
+            toast.error(err.response?.data?.message || 'Erro ao salvar serviço.');
         }
     };
 
@@ -95,10 +143,10 @@ const HomeAdm = () => {
             <nav className="navbar">
                 <div className="logo">Salon Agenda</div>
                 <ul className="nav-links">
-                    <li><a href="/">Sair</a></li>
-                    <li><a href="#services">Serviços</a></li>
-                    <li><a href="/gerenciador">Consulta</a></li>
-                    <li><a href="#contato">Contato</a></li>
+                    <li key="sair"><a href="/">Sair</a></li>
+                    <li key="servicos"><a href="#services">Serviços</a></li>
+                    <li key="consulta"><a href="/gerenciador">Consulta</a></li>
+                    <li key="contato"><a href="#contato">Contato</a></li>
                 </ul>
             </nav>
 
@@ -109,32 +157,31 @@ const HomeAdm = () => {
                 resetForm();
                 setShowForm(true);
             }}>
-               <div class="add-card">
-            <i class="fas fa-plus"></i>
-                <span>Adicionar Serviço</span>
-         </div>
-
+                <div className="add-card">
+                    <i className="fas fa-plus"></i>
+                    <span>Adicionar Serviço</span>
+                </div>
             </button>
 
             <div className="services-grid">
-                {services.map(service => (
-                    <div className="service-card" key={service.id}>
-                        <h3>{service.name}</h3>
-                        <p>{service.description}</p>
-                        <p>Duração: {service.duration} min</p>
-                        <p>Preço: R$ {service.price}</p>
+                {services && services.map(service => (
+                    <div className="service-card" key={`service-${service.id}`}>
+                        <div className="service-content">
+                            <h3>{service.name || 'Sem nome'}</h3>
+                            <p>{service.description || 'Sem descrição'}</p>
+                            <p>Duração: {service.duration || 0} min</p>
+                            <p>Preço: R$ {service.price || 0}</p>
+                        </div>
                         <div className="service-actions">
                             <button
+                                key={`edit-${service.id}`}
                                 className="edit-button"
-                                onClick={() => {
-                                    setFormData(service);
-                                    setServiceToEdit(service);
-                                    setShowForm(true);
-                                }}
+                                onClick={() => handleEditService(service)}
                             >
                                 Editar
                             </button>
                             <button
+                                key={`delete-${service.id}`}
                                 className="delete-button"
                                 onClick={() => {
                                     setServiceToDelete(service);
@@ -153,21 +200,32 @@ const HomeAdm = () => {
                     <div className="modal-content">
                         <h2>{serviceToEdit ? 'Editar Serviço' : 'Novo Serviço'}</h2>
 
-                        <input type="text" placeholder="Nome"
+                        <input 
+                            type="text" 
+                            placeholder="Nome"
                             value={formData.name}
-                            onChange={e => handleInputChange('name', e.target.value)} />
+                            onChange={e => handleInputChange('name', e.target.value)} 
+                        />
 
-                        <textarea placeholder="Descrição"
+                        <textarea 
+                            placeholder="Descrição"
                             value={formData.description}
-                            onChange={e => handleInputChange('description', e.target.value)} />
+                            onChange={e => handleInputChange('description', e.target.value)} 
+                        />
 
-                        <input type="number" placeholder="Duração"
+                        <input 
+                            type="number" 
+                            placeholder="Duração"
                             value={formData.duration}
-                            onChange={e => handleInputChange('duration', e.target.value)} />
+                            onChange={e => handleInputChange('duration', e.target.value)} 
+                        />
 
-                        <input type="number" placeholder="Preço"
+                        <input 
+                            type="number" 
+                            placeholder="Preço"
                             value={formData.price}
-                            onChange={e => handleInputChange('price', e.target.value)} />
+                            onChange={e => handleInputChange('price', e.target.value)} 
+                        />
 
                         <div className="modal-buttons">
                             <button onClick={handleAddOrUpdateService}>
