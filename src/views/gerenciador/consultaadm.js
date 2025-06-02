@@ -19,7 +19,6 @@ const ConsultaAdm = () => {
   const carregarAgendamentos = async () => {
     try {
       setLoading(true);
-      // Aqui você deve substituir pela chamada real à sua API
       const response = await api.get('/api/appointments');
       setAgendamentos(response.data);
     } catch (error) {
@@ -60,13 +59,28 @@ const ConsultaAdm = () => {
   };
 
   const formatarData = (data) => {
-    return new Date(data).toLocaleDateString('pt-BR');
+    if (!data) return 'Data não definida';
+    const dataObj = new Date(data);
+    const opcoes = { 
+      weekday: 'long', 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric' 
+    };
+    return dataObj.toLocaleDateString('pt-BR', opcoes);
+  };
+
+  const formatarHorario = (appointment_date) => {
+    if (!appointment_date) return 'Horário não definido';
+    // Extrai o horário da string de data e hora
+    const horario = appointment_date.split(' ')[1]?.substring(0, 5);
+    return horario || 'Horário não definido';
   };
 
   const filtrarAgendamentos = () => {
     return agendamentos.filter(agendamento => {
       const matchStatus = filtroStatus === 'todos' || agendamento.status === filtroStatus;
-      const matchData = !filtroData || agendamento.data === filtroData;
+      const matchData = !filtroData || agendamento.appointment_date?.startsWith(filtroData);
       return matchStatus && matchData;
     });
   };
@@ -116,11 +130,11 @@ const ConsultaAdm = () => {
             </div>
             
             <div className="card-body">
-              <p><strong>Cliente:</strong> {agendamento.cliente}</p>
-              <p><strong>Serviço:</strong> {agendamento.servico}</p>
-              <p><strong>Data:</strong> {formatarData(agendamento.data)}</p>
-              <p><strong>Horário:</strong> {agendamento.horario}</p>
-              <p><strong>Preço:</strong> R$ {agendamento.preco?.toFixed(2)}</p>
+              <p><strong>Cliente:</strong> {agendamento.user?.name || 'Cliente não identificado'}</p>
+              <p><strong>Serviço:</strong> {agendamento.service?.name || agendamento.service_name}</p>
+              <p><strong>Data:</strong> {formatarData(agendamento.appointment_date)}</p>
+              <p><strong>Horário:</strong> {formatarHorario(agendamento.appointment_date)}</p>
+              <p><strong>Preço do Serviço:</strong> R$ {agendamento.service?.price || agendamento.price || '0.00'}</p>
             </div>
 
             <div className="card-actions">
@@ -168,13 +182,16 @@ const ConsultaAdm = () => {
             
             <div className="modal-body">
               <p><strong>ID:</strong> {agendamentoSelecionado.id}</p>
-              <p><strong>Cliente:</strong> {agendamentoSelecionado.cliente}</p>
-              <p><strong>Serviço:</strong> {agendamentoSelecionado.servico}</p>
-              <p><strong>Data:</strong> {formatarData(agendamentoSelecionado.data)}</p>
-              <p><strong>Horário:</strong> {agendamentoSelecionado.horario}</p>
-              <p><strong>Preço:</strong> R$ {agendamentoSelecionado.preco?.toFixed(2)}</p>
+              <p><strong>Cliente:</strong> {agendamentoSelecionado.user?.name || 'Cliente não identificado'}</p>
+              <p><strong>Email:</strong> {agendamentoSelecionado.user?.email || 'Não disponível'}</p>
+              <p><strong>Serviço:</strong> {agendamentoSelecionado.service?.name || agendamentoSelecionado.service_name}</p>
+              <p><strong>Descrição do Serviço:</strong> {agendamentoSelecionado.service?.description || 'Não disponível'}</p>
+              <p><strong>Duração:</strong> {agendamentoSelecionado.service?.duration || 'Não especificada'} min</p>
+              <p><strong>Data:</strong> {formatarData(agendamentoSelecionado.appointment_date)}</p>
+              <p><strong>Horário:</strong> {formatarHorario(agendamentoSelecionado.appointment_date)}</p>
+              <p><strong>Preço do Serviço:</strong> R$ {agendamentoSelecionado.service?.price || agendamentoSelecionado.price || '0.00'}</p>
               <p><strong>Status:</strong> {agendamentoSelecionado.status}</p>
-              <p><strong>Método de Pagamento:</strong> {agendamentoSelecionado.metodoPagamento}</p>
+              <p><strong>Método de Pagamento:</strong> {agendamentoSelecionado.payment_method}</p>
               <p><strong>Observações:</strong> {agendamentoSelecionado.observacoes || 'Nenhuma'}</p>
             </div>
           </div>
