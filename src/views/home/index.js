@@ -60,7 +60,7 @@ const Home = () => {
                     <li><a href="/">Sair</a></li>
                     <li><a href="#services">Serviços</a></li>
                     <li><a href="/meus-agendamentos">Meus Agendamentos</a></li>
-                    <li><Link to="/sobre">Sobre Nós</Link></li>
+                    <li><Link to="/sobrenos">Sobre Nós</Link></li>
                 </ul>
             </nav>
 
