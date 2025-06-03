@@ -72,9 +72,25 @@ const ConsultaAdm = () => {
 
   const formatarHorario = (appointment_date) => {
     if (!appointment_date) return 'Horário não definido';
-    // Extrai o horário da string de data e hora
-    const horario = appointment_date.split(' ')[1]?.substring(0, 5);
-    return horario || 'Horário não definido';
+    try {
+      // Converte a string para um objeto Date
+      const dataHora = new Date(appointment_date);
+      
+      // Verifica se a data é válida
+      if (isNaN(dataHora.getTime())) {
+        return 'Horário inválido';
+      }
+
+      // Formata o horário no padrão brasileiro (HH:mm)
+      return dataHora.toLocaleTimeString('pt-BR', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false
+      });
+    } catch (error) {
+      console.error('Erro ao formatar horário:', error);
+      return 'Erro ao formatar horário';
+    }
   };
 
   const filtrarAgendamentos = () => {
@@ -192,7 +208,6 @@ const ConsultaAdm = () => {
               <p><strong>Preço do Serviço:</strong> R$ {agendamentoSelecionado.service?.price || agendamentoSelecionado.price || '0.00'}</p>
               <p><strong>Status:</strong> {agendamentoSelecionado.status}</p>
               <p><strong>Método de Pagamento:</strong> {agendamentoSelecionado.payment_method}</p>
-              <p><strong>Observações:</strong> {agendamentoSelecionado.observacoes || 'Nenhuma'}</p>
             </div>
           </div>
         </div>
