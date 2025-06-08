@@ -146,7 +146,6 @@ const HomeAdm = () => {
                     <li key="sair"><a href="/">Sair</a></li>
                     <li key="servicos"><a href="#services">Serviços</a></li>
                     <li key="consulta"><a href="/gerenciador">Consulta</a></li>
-                    <li key="contato"><a href="#contato">Contato</a></li>
                 </ul>
             </nav>
 
