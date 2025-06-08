@@ -160,17 +160,6 @@ const ConsultaAdm = () => {
               >
                 Ver Detalhes
               </button>
-              
-              <select 
-                className="status-select"
-                value={agendamento.status}
-                onChange={(e) => handleStatusChange(agendamento.id, e.target.value)}
-              >
-                <option value="pendente">Pendente</option>
-                <option value="confirmado">Confirmado</option>
-                <option value="cancelado">Cancelado</option>
-                <option value="concluido">Concluído</option>
-              </select>
 
               <button 
                 className="btn-excluir"
