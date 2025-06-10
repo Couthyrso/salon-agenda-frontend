@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import loginImage from './bannerlogin.jpg';
 import './sign-in.css';
@@ -10,6 +10,16 @@ const SignIn = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
+
+  useEffect(() => {
+    // Adiciona a classe "login-page" no body ao montar o componente
+    document.body.classList.add("login-page");
+
+    // Remove a classe "login-page" ao desmontar o componente
+    return () => {
+      document.body.classList.remove("login-page");
+    };
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -30,7 +40,7 @@ const SignIn = () => {
       if (user.admin === true) {
         navigate("/homeadm");
       } else {
-        navigate("/home");
+        navigate("/");
       }
     } catch (error) {
       if (error.response) {

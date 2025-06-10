@@ -23,7 +23,7 @@ const MeusAgendamentos = () => {
     }, []);
 
     const handleVoltarHome = () => {
-        navigate('/home');
+        navigate('/');
     };
 
     const handleExcluirAgendamento = (id) => {

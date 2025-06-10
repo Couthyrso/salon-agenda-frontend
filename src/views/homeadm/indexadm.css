@@ -6,13 +6,16 @@
 }
 
 body {
+  margin-top: 90px;
   background-color: #121212;
-  color: #f5f5f5;
+  color: #d7dceb;
   font-family: "Poppins", sans-serif;
   line-height: 1.6;
   min-height: 100vh;
 }
-
+h2 {
+  color:#121212
+}
 /* Navbar */
 .navbar2 {
   background-color: #1e1e1e;
@@ -65,6 +68,9 @@ body {
   box-shadow: 0 8px 24px rgba(248, 45, 140, 0.4);
   transition: transform 0.3s ease;
   position: relative;
+   display: flex;
+  flex-direction: column;
+  height: 100%; /* ou altura que você quiser, ex: 300px */
 }
 
 .service-card:hover {
@@ -146,8 +152,16 @@ button,
 }
 
 .edit-button {
-  background-color: #d4b08a;
-  color: #121212;
+ padding: 10px 18px;
+  background-color: #4f7fd9;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  margin-top: 15px;
+  transition: background-color 0.3s ease, transform 0.2s;
 }
 
 .delete-button {

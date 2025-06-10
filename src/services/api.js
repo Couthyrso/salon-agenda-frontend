@@ -2,7 +2,7 @@ import axios from 'axios';
 import { getToken } from './auth';
 
 const api = axios.create({
-    baseURL: 'http://salon-agenda.test:8080/',
+    baseURL: 'http://salon-agenda-backend.test/',
     headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json'

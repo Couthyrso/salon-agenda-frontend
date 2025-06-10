@@ -7,6 +7,9 @@ html, body {
   background-color: #353337;
   color: #fff;
 }
+body.login-page {
+  margin-top: 0 !important;
+}
 
 /* Container principal dividido em duas colunas */
 .page-container {

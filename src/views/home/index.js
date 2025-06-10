@@ -57,10 +57,10 @@ const Home = () => {
              style={{ backgroundColor: '#353337', color: 'white' }}>
                 <div className="logo">Salon Agenda</div>
                 <ul className="nav-links">
-                    <li><a href="/">Sair</a></li>
+                    <li><Link to="/sobrenos">Sobre Nós</Link></li>
                     <li><a href="#services">Serviços</a></li>
                     <li><a href="/meus-agendamentos">Meus Agendamentos</a></li>
-                    <li><Link to="/sobrenos">Sobre Nós</Link></li>
+                     <li><a href="/sing-in">Login</a></li>
                 </ul>
             </nav>
 
